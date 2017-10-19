@@ -1,0 +1,25 @@
+{% extends 'orthomodoweb/base.html' %}
+{% block content %}
+
+	<h1>Collection Types</h1>
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	{% if object_list  %}
+		<ul>
+		{% for collectiontype in object_list  %}
+		<p>
+			<a href="{% url 'orthomodoweb:collectiontype-update' collectiontype.id %}">Collection Type {{ collectiontype.id }}: <i>{{ collectiontype.code }}</i> / <strong>{{ collectiontype.name }}</strong> {{ collectiontype.description }}</li></a>
+		</p>
+		{% endfor %}
+			
+		</ul>
+	{% else %}
+		<p>No Collection Types exist.</p>
+	{% endif %}
+	 <p>
+	 <a href="{% url 'orthomodoweb:collectiontype-add' %}">Add a NEW collectiontype</a>
+	</p>
+	<p>
+	 <a href="{% url 'orthomodoweb:home' %}">Back to HOME</a>
+	</p>
+
+{% endblock %}

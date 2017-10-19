@@ -1,0 +1,25 @@
+{% extends 'orthomodoweb/base.html' %}
+{% block content %}
+
+	<h1>OrthoModelTypes</h1>
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	{% if object_list  %}
+		<ul>
+		{% for orthomodeltype in object_list  %}
+		<p>
+			<a href="{% url 'orthomodoweb:orthomodeltype-update' orthomodeltype.id %}">OrthoModelType {{ orthomodeltype.id }}: <i>{{ orthomodeltype.code }}</i> / <strong>{{ orthomodeltype.name }}</strong> / {{ orthomodeltype.description }}</li></a>
+		</p>
+		{% endfor %}
+			
+		</ul>
+	{% else %}
+		<p>No OrthoModelTypes exist.</p>
+	{% endif %}
+	 <p>
+	 <a href="{% url 'orthomodoweb:orthomodeltype-add' %}">Add a NEW orthomodeltype</a>
+	</p>
+	<p>
+	 <a href="{% url 'orthomodoweb:home' %}">Back to HOME</a>
+	</p>
+
+{% endblock %}

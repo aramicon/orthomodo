@@ -1,0 +1,22 @@
+{% extends 'orthomodoweb/base.html' %}
+{% block content %}
+	<script>
+		$(document).ready(function() {
+			$('#id_dob').datepicker({ dateFormat: 'yy-mm-dd' });
+		});
+	</script>
+
+	<h1>Add a new Patient</h1>
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	<form action="" method="post">
+		{% csrf_token %}
+		{{ form.as_p }} 	
+		<input type="submit" value="Submit" />
+	 </form>
+	 <p>
+	 <a href="{% url 'orthomodoweb:patient-list' %}">View All patients</a>
+	</p>
+	<p>
+	 <a href="{% url 'orthomodoweb:home' %}">Back to HOME</a>
+	</p>
+{% endblock %}

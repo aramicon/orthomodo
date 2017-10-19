@@ -1,0 +1,25 @@
+{% extends 'orthomodoweb/base.html' %}
+{% block content %}
+
+	<h1>Clinicians</h1>
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	{% if object_list  %}
+		<ul>
+		{% for clinician in object_list  %}
+		<p>
+			<a href="{% url 'orthomodoweb:clinician-update' clinician.id %}">Clinician {{ clinician.id }}: <i>{{ clinician.code }}</i> / <strong>{{ clinician.name }}</strong> </li></a>
+		</p>
+		{% endfor %}
+			
+		</ul>
+	{% else %}
+		<p>No Clinicians exist.</p>
+	{% endif %}
+	 <p>
+	 <a href="{% url 'orthomodoweb:clinician-add' %}">Add a NEW clinician</a>
+	</p>
+	<p>
+	 <a href="{% url 'orthomodoweb:home' %}">Back to HOME</a>
+	</p>
+
+{% endblock %}

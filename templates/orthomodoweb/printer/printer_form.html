@@ -1,0 +1,32 @@
+{% extends 'orthomodoweb/base.html' %}
+{% block content %}
+
+	<script>
+		$(document).ready(function() {
+			$('#id_start_date').datepicker({ dateFormat: 'yy-mm-dd' });
+			$('#id_end_date').datepicker({ dateFormat: 'yy-mm-dd' });
+		});
+	</script>
+
+	 
+	<h1>Update Printer: {{ printer.name }}</h1>
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	<form action="{% url 'orthomodoweb:printer-update' pk=printer.id %}" method="post">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<input type="submit" value="Submit" />
+	 </form>
+	 <p>
+	 <a href="{% url 'orthomodoweb:printer-add' %}">Add NEW Printer</a>
+	</p>
+	 <p>
+	 <a href="{% url 'orthomodoweb:printer-delete' printer.id%}">Delete this Printer</a>
+	</p>
+	<p>
+	 <a href="{% url 'orthomodoweb:printer-list' %}">View All Printers</a>
+	</p>
+	<p>
+	 <a href="{% url 'orthomodoweb:home' %}">Back to HOME</a>
+	</p>
+
+{% endblock %}

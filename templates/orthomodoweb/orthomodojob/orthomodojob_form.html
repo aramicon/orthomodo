@@ -1,0 +1,211 @@
+{% extends 'orthomodoweb/base.html' %}
+{% block content %}
+
+	<script>
+		$(document).ready(function() {
+			$('#scan_date').datepicker({ dateFormat: 'yy-mm-dd' });
+			$('#id_scan_date').datepicker({ dateFormat: 'yy-mm-dd' });
+			$('#print_date').datepicker({ dateFormat: 'yy-mm-dd' });
+			$('#id_print_date').datepicker({ dateFormat: 'yy-mm-dd' });
+			$('#id_planned_collection_date').datepicker({ dateFormat: 'yy-mm-dd' });
+			$('#planned_collection_date').datepicker({ dateFormat: 'yy-mm-dd' });
+		});
+	</script>
+	<script>
+	  $( function() {
+	  
+		if ($("#id_planned_collection_time")){
+			$("#id_planned_collection_time").before("<div id='collection_time_slider'></div>");
+		}
+	
+		//collection time slider
+		$( "#collection_time_slider" ).slider({
+		  range: "min",
+		  value: 0,
+		  min: 0,
+		  max: 1440,
+		  slide: function( event, ui ) {
+		  
+			var hours1 = String(Math.floor(ui.value / 60));
+					var minutes1 = String(ui.value - (hours1 * 60));
+					if (ui.value == 1440){
+						hours1 = "23";
+						minutes1 = "59";
+					}
+
+					if (hours1.length == 1) hours1 = '0' + hours1;
+					if (minutes1.length == 1) minutes1 = '0' + minutes1;
+					if (minutes1 == 0) minutes1 = '00';
+
+					$('#id_planned_collection_time').val(hours1 + ':' + minutes1);
+					
+		   
+		  }
+		});
+		
+		//initialise the slider for the time
+		var slider_time_total_minutes = 0;	
+		
+		if ($('#id_planned_collection_time').val()){
+			var slider_time = $('#id_planned_collection_time').val();
+			if(slider_time.indexOf(":") > 0){ //format should be 23:23
+				//parse and convert to a number of minutes (0-1440)
+				var slider_time_hours = slider_time.substring(0, slider_time.indexOf(":"));
+				slider_time = slider_time.substring(slider_time.indexOf(":")+1);
+				var slider_time_minutes = slider_time // slider_time.substring(0, slider_time.indexOf(":"));
+				slider_time_total_minutes = (parseInt(slider_time_hours)*60) + parseInt(slider_time_minutes);	
+			}		
+		}
+		if($("#collection_time_slider")){
+			$( "#collection_time_slider" ).slider('value',slider_time_total_minutes);
+		}
+		
+		
+		  //accordian 
+		 $( "#orthomodojob_accordion" ).accordion({
+		  collapsible: true,
+		  active: false,
+		  heightStyle: "content"
+		});
+		
+		
+	  } );
+	  </script>
+
+	 
+	<h1>OrthoModoJob: {{ orthomodojob.id }}</h1>
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	
+	
+	 
+	<form action="{% url 'orthomodoweb:orthomodojob-update' pk=orthomodojob.id %}" method="post">
+		{% csrf_token %}
+		
+		<p>
+			<strong>BASIC INFO</strong>
+			PATIENT: <a href="{% url 'orthomodoweb:patient-update' orthomodojob.patient.id %}">{{ orthomodojob.patient.name }}</a>
+			<input type=hidden name="patient" id="id_patient" value="{{ orthomodojob.patient.id }}">
+			SCAN DATE: <input type="text" name="scan_date" id="id_scan_date" maxlength="200" placeholder = "Scan Date" value = '{{ orthomodojob.scan_date|date:"Y-m-d" }}'>
+			
+			
+			CLINICIAN: 
+			<select name="clinician" id = "id_clinician">				
+				{% for c in clinician_list %}
+					{% ifequal orthomodojob.clinician.id c.id %}
+						<option value="{{ c.id }}" selected="selected">{{ c.name }}</option>
+					{% else %}
+						<option value="{{ c.id }}">{{ c.name }}</option>	
+					{% endifequal %}
+				{% endfor %}
+			</select>
+		</p>
+	
+		
+	<div id="orthomodojob_accordion">
+		<h3>ORTHOTRAC INFO</h3>
+		<div>
+			<p class = "header_group_2">
+				ORTHOTRAC REFERENCE NO: <input type="text" name="orthotrac_reference_no" id="id_orthotrac_reference_no" maxlength="200" placeholder = "Orthotrac Reference no" value = "{{ orthomodojob.orthotrac_reference_no }}">
+				<br />
+				IS ANALYSED? <input type="checkbox" name="orthotrac_analysis_done" id="id_orthotrac_analysis_done" {% if orthomodojob.orthotrac_analysis_done %}checked{% endif %} >
+				<br />
+				ANALYSIS NOTES
+				<br />
+				<textarea  rows="5" cols="120" name="orthotrac_analysis_notes" id="id_orthotrac_analysis_notes" placeholder = "Day Main Text">{{ orthomodojob.orthotrac_analysis_notes }}</textarea>
+			</p>
+		</div>
+		<h3>PRINTING</h3>
+		<div>
+			<p class = "header_group_3">
+				PRINTER: 
+				<select name="printer" id = "id_printer">	
+					<option value="" selected="">---------</option>
+					{% for pr in printer_list %}
+						{% ifequal orthomodojob.printer.id pr.id %}
+							<option value="{{ pr.id }}" selected="selected">{{ pr.name }}</option>
+						{% else %}
+							<option value="{{ pr.id }}">{{ pr.name }}</option>	
+						{% endifequal %}
+					{% endfor %}
+				</select>
+				<br />
+				IS AN STL FILE PREPARED? <input type="checkbox" name="is_stl_file_prepared" id="id_is_stl_file_prepared" {% if orthomodojob.is_stl_file_prepared %}checked{% endif %} >
+				<br />
+				PRINT DATE: <input type="text" name="print_date" id="id_print_date" maxlength="200" placeholder = "Print Date" value = '{{ orthomodojob.print_date|date:"Y-m-d" }}'>
+			</p>
+		</div>
+		<h3>MODEL DETAILS</h3>
+		  <div>
+			<p class = "header_group_4">MODEL TYPE: 
+				<select name="orthomodel_type" id = "id_orthomodel_type">	
+					<option value="" selected="">---------</option>
+					{% for omt in orthomodel_type_list %}
+						{% ifequal orthomodojob.orthomodel_type.id omt.id %}
+							<option value="{{ omt.id }}" selected="selected">{{ omt.name }}</option>
+						{% else %}
+							<option value="{{ omt.id }}">{{ omt.name }}</option>	
+						{% endifequal %}
+					{% endfor %}
+				</select>
+				<br />
+				ORTHO MODEL NOTES (NEEDED FOR)
+				<br />
+				<textarea  rows="5" cols="120" name="orthomodel_notes" id="id_orthomodel_notes" placeholder = "Day Main Text">{{ orthomodojob.orthomodel_notes }}</textarea>
+		
+			</p>		
+			
+		  </div>
+		  <h3>COLLECTION</h3>
+			<div>
+				<p class = "header_group_5">
+					COLLECTION TYPE: 
+					<select name="collection_type" id = "id_collection_type">	
+						{% for ct in collection_type_list %}
+							{% ifequal orthomodojob.collection_type.id ct.id %}
+								<option value="{{ ct.id }}" selected="selected">{{ ct.name }}</option>
+							{% else %}
+								<option value="{{ ct.id }}">{{ ct.name }}</option>	
+							{% endifequal %}
+						{% endfor %}
+					</select>
+					<br />
+					COLLECTION DATE: <input type="text" name="planned_collection_date" id="id_planned_collection_date" maxlength="200" placeholder = "Planned Collection Date" value = '{{ orthomodojob.planned_collection_date|date:"Y-m-d" }}'>
+					<br />
+					COLLECTION TIME: <input type="text" name="planned_collection_time" id="id_planned_collection_time">
+					<br />
+					IS COLLECTED? <input type="checkbox" name="is_collected" id="id_is_collected" {% if orthomodojob.is_collected %}checked{% endif %} >
+					<br />
+					COLLECTION NOTES
+					<br />
+					<textarea  rows="5" cols="120" name="collection_notes" id="id_collection_notes" placeholder = "Day Main Text">{{ orthomodojob.collection_notes }}</textarea>		
+				</p>
+			</div>			
+	 </div>
+		
+		
+		<p class="status{% if orthomodojob.flagged %}_flagged{% endif %}">
+			IS FLAGGED? <input type="checkbox" name="flagged" id="id_flagged" {% if orthomodojob.flagged %}checked{% endif %} >
+			<br />
+			FLAG NOTES
+			<br />
+			<textarea  rows="5" cols="120" name="flag_status_note" id="id_flag_status_note" placeholder = "Flag Notes">{{ orthomodojob.flag_status_note }}</textarea>
+		
+		</p>
+		
+		<input type="submit" value=" SAVE " />
+	 </form>
+	 
+	 <p>
+	 <a href="{% url 'orthomodoweb:orthomodojob-add' %}">Add NEW OrthoModoJob</a>
+	</p>
+	 <p>
+	 <a href="{% url 'orthomodoweb:orthomodojob-delete' orthomodojob.id%}">Delete this OrthoModoJob</a>
+	</p>
+	<p>
+	 <a href="{% url 'orthomodoweb:orthomodojob-open-list' %}">View All OrthoModoJobs</a>
+	</p>
+	<p>
+	 <a href="{% url 'orthomodoweb:home' %}">Back to HOME</a>
+	</p>
+
+{% endblock %}

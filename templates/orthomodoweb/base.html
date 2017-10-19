@@ -1,0 +1,41 @@
+{% load staticfiles %}
+<html>
+    <head>
+        <title>OrthoModo Web: 3d model printing</title>       
+        <link rel = "stylesheet" type = "text/css" href="{% static 'orthomodoweb/style.css' %}">
+		<link rel = "stylesheet" type = "text/css" href="{% static 'orthomodoweb/jquery-ui.css' %}">
+		<script src ="{% static 'orthomodoweb/jquery-3.2.1.min.js' %}"></script>
+		<script src ="{% static 'orthomodoweb/jquery-ui.js' %}"></script>
+    </head>
+	<body>
+		<div class="page-header">
+			<strong>OrthoModo Web</strong>
+			<span class = "userinfo" > Logged in as {{ user.get_username }}	 | <a href="{% url 'orthomodoweb:logout' %}">Logout</a>	</span>				
+			<div id = "topmenu">
+			<ul>
+			<li><a href="{% url 'orthomodoweb:home' %}">HOME</a></li>
+			<li><a href="{% url 'orthomodoweb:orthomodojob-open-list' %}">OPEN JOBS</a></li>			
+			<li><a href="{% url 'orthomodoweb:orthomodojob-all-list' %}">ALL JOBS</a></li>			
+			<li><a href="{% url 'orthomodoweb:patient-list' %}">PATIENTS</a></li>		
+			<li><a href="{% url 'orthomodoweb:patient-add' %}">ADD NEW PATIENT</a></li>
+			<li><a href="{% url 'orthomodoweb:printer-list' %}">PRINTERS</a></li>
+			<li><a href="{% url 'orthomodoweb:clinician-list' %}">CLINICIANS</a></li>
+			<li><a href="{% url 'orthomodoweb:orthomodeltype-list' %}">ORTHOMODEL TYPEs</a></li>
+			<li><a href="{% url 'orthomodoweb:collectiontype-list' %}">COLLECTION TYPES</a></li>
+			</ul>
+			
+		</div>			
+		</div>
+		<div class="content container">
+			<div class="row">
+				<div class="col-md-8">
+				{% block content %}
+				{% endblock %}
+				</div>
+			</div>
+		</div>
+		<div class="page-footer">
+		OrthoModo Web System. Developed by Donakello. <span class='support_link'>Problems? EMAIL <a href="mailto:donakello@gmail.com?Subject=OrthoModo Web Support" target="_top">donakello@gmail.com</a></span>
+		</div>
+	</body>
+</html>

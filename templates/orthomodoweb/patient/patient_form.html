@@ -1,0 +1,34 @@
+{% extends 'orthomodoweb/base.html' %}
+{% block content %}
+
+	<script>
+		$(document).ready(function() {
+			$('#id_dob').datepicker({ dateFormat: 'yy-mm-dd' });
+		});
+	</script>
+
+	 
+	<h1>Update Patient: {{ patient.name }}</h1>
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	<form action="{% url 'orthomodoweb:patient-update' pk=patient.id %}" method="post">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<input type="submit" value="Submit" />
+	 </form>
+	 <p>
+	 <a href="{% url 'orthomodoweb:patient-add-job' patient_id=patient.id %}">Add JOB for this Patient</a>
+	</p>
+	 <p>
+	 <a href="{% url 'orthomodoweb:patient-add' %}">Add NEW Patient</a>
+	</p>
+	 <p>
+	 <a href="{% url 'orthomodoweb:patient-delete' patient.id%}">Delete this Patient</a>
+	</p>
+	<p>
+	 <a href="{% url 'orthomodoweb:patient-list' %}">View All Patients</a>
+	</p>
+	<p>
+	 <a href="{% url 'orthomodoweb:home' %}">Back to HOME</a>
+	</p>
+
+{% endblock %}

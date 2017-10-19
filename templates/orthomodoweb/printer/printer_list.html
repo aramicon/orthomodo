@@ -1,0 +1,25 @@
+{% extends 'orthomodoweb/base.html' %}
+{% block content %}
+
+	<h1>Printers</h1>
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	{% if object_list  %}
+		<ul>
+		{% for printer in object_list  %}
+		<p>
+			<a href="{% url 'orthomodoweb:printer-update' printer.id %}">Printer {{ printer.id }}: <i>{{ printer.code }}</i> <strong>{{ printer.name }}</strong> ({{ printer.description }})</li></a>
+		</p>
+		{% endfor %}
+			
+		</ul>
+	{% else %}
+		<p>No Printers exist.</p>
+	{% endif %}
+	 <p>
+	 <a href="{% url 'orthomodoweb:printer-add' %}">Add a NEW printer</a>
+	</p>
+	<p>
+	 <a href="{% url 'orthomodoweb:home' %}">Back to HOME</a>
+	</p>
+
+{% endblock %}
