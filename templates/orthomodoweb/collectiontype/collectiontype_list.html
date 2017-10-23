@@ -1,25 +1,35 @@
 {% extends 'orthomodoweb/base.html' %}
 {% block content %}
-
-	<h1>Collection Types</h1>
-	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-	{% if object_list  %}
-		<ul>
-		{% for collectiontype in object_list  %}
-		<p>
-			<a href="{% url 'orthomodoweb:collectiontype-update' collectiontype.id %}">Collection Type {{ collectiontype.id }}: <i>{{ collectiontype.code }}</i> / <strong>{{ collectiontype.name }}</strong> {{ collectiontype.description }}</li></a>
+	<div class="standard_page_container">
+		<div class="standard_page_container_header">Collection Types: {{ total_collectiontypes }}</div>
+	
+		{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+		
+		{% if object_list  %}			
+			<table>
+				<tr>					
+					<th class="header_group_2">ID</th>		
+					<th class="header_group_2">Code</th>		
+					<th class="header_group_2">Name</th>								
+					<th class="header_group_2">Description</th>
+				</tr>				
+			{% for collectiontype in object_list  %}
+				<tr>				
+					<td><a href="{% url 'orthomodoweb:collectiontype-update' collectiontype.id %}">collectiontype {{ collectiontype.id }}</a> </td>
+					<td>{{ collectiontype.code }}</td>		
+					<td>{{ collectiontype.name }}</td>
+					<td>{{ collectiontype.description }}</td>
+					</li>
+				</tr>
+			{% endfor %}
+				
+			</table>
+		{% else %}
+			<p>No collectiontypes found.</p>
+		{% endif %}
+		 <p>
+		 <a class = "button" href="{% url 'orthomodoweb:collectiontype-add' %}">Add Collection Type</a>
 		</p>
-		{% endfor %}
-			
-		</ul>
-	{% else %}
-		<p>No Collection Types exist.</p>
-	{% endif %}
-	 <p>
-	 <a href="{% url 'orthomodoweb:collectiontype-add' %}">Add a NEW collectiontype</a>
-	</p>
-	<p>
-	 <a href="{% url 'orthomodoweb:home' %}">Back to HOME</a>
-	</p>
+	</div>
 
 {% endblock %}

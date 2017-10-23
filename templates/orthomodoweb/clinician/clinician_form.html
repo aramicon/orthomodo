@@ -1,31 +1,96 @@
 {% extends 'orthomodoweb/base.html' %}
 {% block content %}
-
-	<script>
-		$(document).ready(function() {
-			$('#id_dob').datepicker({ dateFormat: 'yy-mm-dd' });
-		});
-	</script>
-
-	 
-	<h1>Update Clinician: {{ clinician.name }}</h1>
+	
+	<div class="form_header">Clinician: {{ clinician.name }}</div>
 	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-	<form action="{% url 'orthomodoweb:clinician-update' pk=clinician.id %}" method="post">
-		{% csrf_token %}
-		{{ form.as_p }}
-		<input type="submit" value="Submit" />
-	 </form>
-	 <p>
-	 <a href="{% url 'orthomodoweb:clinician-add' %}">Add NEW Clinician</a>
-	</p>
-	 <p>
-	 <a href="{% url 'orthomodoweb:clinician-delete' clinician.id%}">Delete this Clinician</a>
-	</p>
-	<p>
-	 <a href="{% url 'orthomodoweb:clinician-list' %}">View All Clinicians</a>
-	</p>
-	<p>
-	 <a href="{% url 'orthomodoweb:home' %}">Back to HOME</a>
-	</p>
+	<div class = "formcontainer_f">	
+		<form action="" method="post">
+			{% csrf_token %}
+			
+			<label for="id_code">CODE*:</label>	
+			<br />
+			<input type="text" name="code" id="id_code" maxlength="200" placeholder = "Code" value = '{{ clinician.code }}'>
+			<br />
+			<label for="id_name">NAME*:</label>	
+			<br />
+			<input type="text" name="name" id="id_name" maxlength="200" placeholder = "Name" value = '{{ clinician.name }}'>
+			<br />
+			<label for="id_description">DESCRIPTION:</label>	
+			<br />
+			<textarea  rows="5" cols="120" name="description" id="id_description" placeholder = "Description">{{ clinician.description }}</textarea>
+			<br />			
+			<input class="button"type="submit" value="SAVE" />
+		 </form>
+		 
+	</div>	
+	<div class="datatable">
+	<div class = "datatable_header">Clinician Jobs</div>
+		<table>
+		<tr>				
+				<th colspan="4" class="header_group_1">Basic Info</th>	
+				<th colspan="3" class="thickborderleft header_group_2">Orthotrac</th>
+				<th colspan="4" class="thickborderleft header_group_3">3d Printing</th>
+				<th colspan="2" class="thickborderleft header_group_4">Model info</th>
+				<th colspan="5" class="thickborderleft header_group_5">Collection</th>
+				<th colspan="5" class="thickborderleft header_group_6">Flag Status</th>
+			</tr>
+			<tr>
+				<th>ID</th>
+				<th>Scan Date</th>
+				<th>Patient</th>
+				<th>Clinician</th>				
+				<th class="thickborderleft">Ref No</th>
+				<th>Analysed?</th>
+				<th>Notes</th>
+				<th class="thickborderleft">Printer</th>
+				<th>STL file?</th>
+				<th>Printed?</th>
+				<th>Print Date</th>
+				<th class="thickborderleft">Type</th>
+				<th>Notes</th>
+				<th class="thickborderleft">Type</th>
+				<th>Planned Date</th>
+				<th>Time</th>
+				<th>Notes</th>
+				<th>Collected?</th>
+				<th class="thickborderleft">Status</th>
+				<th >Notes</th>
+			</tr>
+		{% if clinician.orthomodojob_set %}
+		{% for orthomodojob in clinician.orthomodojob_set.all  %}
+			<tr>
+		
+			<td><a href="{% url 'orthomodoweb:orthomodojob-update' orthomodojob.id %}">OMJOB_{{ orthomodojob.id }}</a></td>
+			<td>{{ orthomodojob.scan_date|date:"Y-m-d" }}</td>
+			<td><a href="{% url 'orthomodoweb:patient-update' orthomodojob.patient.id %}">{{ orthomodojob.patient.name }}</a></td>
+			<td>{% if orthomodojob.clinician %}<a href="{% url 'orthomodoweb:clinician-update' orthomodojob.clinician.id %}">{{ orthomodojob.clinician.name }}</a>{% endif %}</td> 			
+			<td class="thickborderleft">{{ orthomodojob.orthotrac_reference_no }}</td>
+			<td>{{ orthomodojob.orthotrac_analysis_done|yesno:"Yes,No" }}</td>
+			<td>{{ orthomodojob.orthotrac_analysis_notes }}</td>
+			<td class="thickborderleft">{% if orthomodojob.printer %}<a href="{% url 'orthomodoweb:printer-update' orthomodojob.printer.id %}">{{ orthomodojob.printer.name }}</a>{% endif %}</td>
+			<td>{{ orthomodojob.is_stl_file_prepared|yesno:"Yes,No" }}</td>
+			<td>{{ orthomodojob.is_printed|yesno:"Yes,No" }}</td>
+			<td>{{ orthomodojob.print_date|date:"Y-m-d" }}</td>
+			<td class="thickborderleft">{% if orthomodojob.orthomodel_type %}<a href="{% url 'orthomodoweb:orthomodeltype-update' orthomodojob.orthomodel_type.id %}">{{ orthomodojob.orthomodel_type.name }}</a>{% endif %}</td>
+			<td>{{ orthomodojob.orthomodel_notes }}</td>
+			<td class="thickborderleft">{% if orthomodojob.collection_type %}<a href="{% url 'orthomodoweb:collectiontype-update' orthomodojob.collection_type.id %}">{{ orthomodojob.collection_type.name }}</a>{% endif %}</td>
+			<td>{{ orthomodojob.planned_collection_date|date:"Y-m-d" }}</td>
+			<td>{{ orthomodojob.planned_collection_time }}</td>
+			<td>{{ orthomodojob.collection_notes }}</td>			
+			<td>{{ orthomodojob.is_collected|yesno:"Yes,No" }}</td>
+			<td class="thickborderleft status{% if orthomodojob.flagged %}_flagged{% endif %}">{{ orthomodojob.flagged|yesno:"FLAGGED,normal" }}</td>
+			<td class="status{% if orthomodojob.flagged %}_flagged{% endif %}">{{ orthomodojob.flag_status_note }}</td>
+			</tr>
+		{% endfor %}
+		</table>	
+		
+	{% else %}
+		<p class="emptylist">No OrthoModoJobs found for this clinician.</p>
+	{% endif %}
+	</div>
+	<div class="bottom_action_links">
+		<a class="button" href="{% url 'orthomodoweb:clinician-add' %}">Add NEW Clinician</a>
+		<a class= "button_red" href="{% url 'orthomodoweb:clinician-delete' clinician.id%}">Delete this Clinician</a>			
+	</div>
 
 {% endblock %}

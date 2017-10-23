@@ -1,25 +1,54 @@
 {% extends 'orthomodoweb/base.html' %}
 {% block content %}
-
-	<h1>Patients</h1>
-	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-	{% if object_list  %}
-		<ul>
-		{% for patient in object_list  %}
-		<p>
-			<a href="{% url 'orthomodoweb:patient-update' patient.id %}">Patient {{ patient.id }}: <i>{{ patient.code }}</i> / {{ patient.reference_no }} / <strong>{{ patient.name }}</strong> / {{ patient.email }} / {{ patient.address }} / {{ patient.dob|date:"Y-m-d" }} </li></a>
+	<div class="standard_page_container">
+		<div class="standard_page_container_header">Patients: {{ total_all_patients }}</div>
+	
+		{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+		<form id="searchform" action="" method="get" accept-charset="utf-8">      
+			<input class="searchfield" id="searchbox" name="q" type="text" placeholder="Search" value="{% if search_applied %}{{ search_applied }}{% endif %}"/>
+			<button class="searchbutton" type="submit">
+				<i class="search-button-text">Search</i>
+			</button>		
+		</form>
+		{% if search_applied %}<div class="search_applied"> SEARCH APPLIED <span class='search_text'>{{ search_applied }}</span> (<a href="{% url 'orthomodoweb:patient-list' %}">CLEAR</a>)</div>{% endif %}	  
+		
+		{% if object_list  %}			
+			<table>
+				<tr>					
+					<th class="header_group_2">ID</th>		
+					<th class="header_group_2">Code</th>		
+					<th class="header_group_2">Name</th>		
+					<th class="header_group_2">Reference No</th>		
+					<th class="header_group_2">Email</th>		
+					<th class="header_group_2">Date of Birth</th>		
+					<th class="header_group_2">Phone no. 1</th>		
+					<th class="header_group_2">Phone no. 2</th>		
+					<th class="header_group_2">Address</th>		
+					<th class="header_group_2">Description</th>
+				</tr>				
+			{% for patient in object_list  %}
+				<tr>				
+					<td><a href="{% url 'orthomodoweb:patient-update' patient.id %}">Patient {{ patient.id }}</a> </td>
+					<td>{{ patient.code }}</td>		
+					<td>{{ patient.name }}</td>
+					<td>{{ patient.reference_no }}</td>			
+					<td><a href="mailto:{{ patient.email }}" target="_top">{{ patient.email }}</a></td>		
+					<td>{{ patient.dob|date:"Y-m-d" }}</td>
+					<td>{{ patient.phone_no_1 }}</td>
+					<td>{{ patient.phone_no_2 }}</td>
+					<td>{{ patient.address }}</td>
+					<td>{{ patient.description }}</td>
+					</li>
+				</tr>
+			{% endfor %}
+				
+			</table>
+		{% else %}
+			<p>No Patients found.</p>
+		{% endif %}
+		 <p>
+		 <a class = "button" href="{% url 'orthomodoweb:patient-add' %}">Add Patient</a>
 		</p>
-		{% endfor %}
-			
-		</ul>
-	{% else %}
-		<p>No Patients exist.</p>
-	{% endif %}
-	 <p>
-	 <a href="{% url 'orthomodoweb:patient-add' %}">Add a NEW patient</a>
-	</p>
-	<p>
-	 <a href="{% url 'orthomodoweb:home' %}">Back to HOME</a>
-	</p>
+	</div>
 
 {% endblock %}

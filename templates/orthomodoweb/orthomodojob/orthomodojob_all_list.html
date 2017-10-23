@@ -1,17 +1,17 @@
 {% extends 'orthomodoweb/base.html' %}
 {% block content %}
-
-	<h1>OrthoModoJobs: ALL JOBS: {{ total_all_jobs }}</h1>
-	<form id="searchform" action="" method="get" accept-charset="utf-8">      
-      <input class="searchfield" id="searchbox" name="q" type="text" placeholder="Search" value="{% if search_applied %}{{ search_applied }}{% endif %}"/>
-	  <button class="searchbutton" type="submit">
-        <i class="search-button-text">Search</i>
-      </button>
-	  {% if search_applied %}<div class="search_applied"> SEARCH APPLIED {{ search_applied }} </div>{% endif %}	  
-    </form>
-	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-	{% if object_list  %}
-		<ul>
+	<div class="standard_page_container">
+		<div class="standard_page_container_header">OrthoModoJobs: ALL JOBS: {{ total_all_jobs }}</div>
+		<form id="searchform" action="" method="get" accept-charset="utf-8">      
+		  <input class="searchfield" id="searchbox" name="q" type="text" placeholder="Search" value="{% if search_applied %}{{ search_applied }}{% endif %}"/>
+		  <button class="searchbutton" type="submit">
+			<i class="search-button-text">Search</i>
+		  </button>	 
+		</form>
+		{% if search_applied %}<div class="search_applied"> SEARCH APPLIED <span class='search_text'>{{ search_applied }}</span> (<a href="{% url 'orthomodoweb:orthomodojob-all-list' %}">CLEAR</a>)</div>{% endif %}	
+		{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+		{% if object_list  %}
+			
 		<table>
 		<tr>
 				
@@ -76,10 +76,12 @@
 			</tr>
 		{% endfor %}
 		</table>	
+			
+		{% else %}
+			<p class="emptylist">No OrthoModoJobs found.</p>
+		{% endif %}
 		
-	{% else %}
-		<p class="emptylist">No OrthoModoJobs found.</p>
-	{% endif %}
+	</div>
 	
 
 {% endblock %}

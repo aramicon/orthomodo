@@ -133,6 +133,7 @@ p{
 	border-top-right-radius: 3px;
 	border-bottom-right-radius: 3px;
 	border-bottom-left-radius: 3px;
+	margin-top:20px;
  }
  
  table {
@@ -229,4 +230,197 @@ tr:nth-child(even) {
 
 #topmenu li a:hover {
     background-color: #111;
+	color: #4CAF50;
+}
+
+.search_applied{
+	padding:2px;
+	background-color:#d4e6ce;
+}
+.search_text{
+	font-style:italic;
+}
+
+.button {
+
+padding: 10px 15px 11px !important;
+font-size: 18px !important;
+background-color: #4CAF50;
+font-weight: bold;
+text-shadow: 1px 1px #57D6C7;
+color: #ffffff;
+border-radius: 5px;
+-moz-border-radius: 5px;
+-webkit-border-radius: 5px;
+border: 1px solid #57D6C7;
+cursor: pointer;
+box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
+-moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
+-webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
+text-decoration: none;
+}
+.button_red {
+
+padding: 10px 15px 11px !important;
+font-size: 18px !important;
+background-color: #f76060;
+font-weight: bold;
+text-shadow: 1px 1px #57D6C7;
+color: #ffffff;
+border-radius: 5px;
+-moz-border-radius: 5px;
+-webkit-border-radius: 5px;
+border: 1px solid #57D6C7;
+cursor: pointer;
+box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
+-moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
+-webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
+text-decoration: none;
+}
+.button:hover, .button_red:hover{
+	color: #000000;
+	background-color: #ffffff;
+}
+
+
+.form_header{
+	font-weight:bold;
+	padding-left:10px;
+	padding-bottom:10px;
+	font-size:2em;	
+    font-family: Verdana, Geneva, sans-serif;
+	text-transform: uppercase;
+	background-color: #333;
+	color:#fff;
+}
+
+.formcontainer{
+	border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+	overflow:hidden;
+	margin: 10px
+	/* max-width: 600px; */
+}
+
+.formcontainer_f{
+	border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+	overflow:hidden;
+	margin: 10px
+	/* max-width: 600px; */
+}
+
+.formcontainer input[type=text], .formcontainer textarea, .formcontainer select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+	float:right;
+}
+.formcontainer label{
+	/* display:block; */
+	/* padding: 12px 20px; */
+    /* margin: 8px 0; */
+	/* float:left; */
+	color: #595a59;
+	font-weight:bold;
+}
+.formcontainer_f input[type=text], .formcontainer_f textarea, .formcontainer_f select {
+   
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+.formcontainer_f label{
+	/* display:block; */
+	/* padding: 12px 20px; */
+    /* margin: 8px 0; */
+	/* float:left; */
+	color: #595a59;
+	font-weight:bold;
+}
+
+.formcontainer .column {
+	float: left;
+     padding: 10px;
+	/* width: 400px; */
+}
+.form_left_container{
+	 width: 25%;
+}
+
+.form_right_container{
+	position: relative;
+	/* width: 200px; */
+    /* width: 500px; */
+}
+
+.bottom_action_links{
+	/* border: 1px solid #ccc; */
+	padding-top: 10px;
+	padding-left: 10px;
+}
+
+.datatable_header{
+	font-weight:bold;
+	color:#a9a2a2;
+	font-family: Verdana, Geneva, sans-serif;	
+}
+
+.datatable{
+	padding: 10px;
+}
+
+.form_section{
+	/* border: 2px solid #333333; */
+	padding:10px;
+	background-color: #ffffff;
+}
+.form_section_header{
+	font-weight:bold;
+	color:#4caf50;
+	font-family: Verdana, Geneva, sans-serif;
+	background-color: #ffffff;
+}
+
+#orthomodojob_accordion{
+	padding: 10px;
+    background-color: #fff;
+}
+
+.standard_page_container{
+	background-color: #f2f2f2;
+    padding: 10px;
+}
+.standard_page_container_header{
+	font-weight:bold;
+	padding-left:10px;
+	padding-bottom:10px;
+	font-size:2em;	
+    font-family: Verdana, Geneva, sans-serif;
+	text-transform: uppercase;
+	background-color: #333;
+	color:#fff;
+	margin-bottom: 6px;	
+}
+
+.searchbutton{
+	border: 2px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+	cursor:pointer;
+	background-color: #4CAF50;
+	padding:8px;
+}
+
+.frontpage{
+	padding:20px;
 }

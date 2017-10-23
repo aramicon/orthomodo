@@ -232,6 +232,10 @@ class PrinterView(LoginRequiredMixin,generic.ListView):
     def get_queryset(self):
         """Return Printers for the logged-in user."""
         return Printer.objects.filter().order_by('name')  
+    def get_context_data(self, **kwargs):
+        context=super(PrinterView,self).get_context_data(**kwargs)
+        context['total_printers'] =  Printer.objects.filter().count() 
+        return context
 
 class PrinterCreate(LoginRequiredMixin,CreateView):
     login_url = 'orthomodoweb:login'
@@ -242,8 +246,9 @@ class PrinterCreate(LoginRequiredMixin,CreateView):
     fields=['name','code','description']   
     def form_valid(self, form):
         printer = form.save(commit=False)
-        printer.user = self.request.user
         return super(PrinterCreate, self).form_valid(form)
+    def form_invalid(self, form):
+        return HttpResponse("form is invalid... " + str(form.errors))
 
 class PrinterUpdate(LoginRequiredMixin,UpdateView):
     login_url = 'orthomodoweb:login'
@@ -255,6 +260,8 @@ class PrinterUpdate(LoginRequiredMixin,UpdateView):
     def get_queryset(self):
         base_qs = super(PrinterUpdate, self).get_queryset()
         return base_qs.filter()
+    def form_invalid(self, form):
+        return HttpResponse("form is invalid... " + str(form.errors))
 
 class PrinterDelete(LoginRequiredMixin,DeleteView):
     login_url = 'orthomodoweb:login'
@@ -272,9 +279,43 @@ class PatientView(LoginRequiredMixin,generic.ListView):
     redirect_field_name = 'orthomodoweb:home'
     model = Patient
     template_name = 'orthomodoweb/patient/patient_list.html'
+    def get_context_data(self, **kwargs):
+        context=super(PatientView,self).get_context_data(**kwargs)
+        context['total_all_patients'] =  Patient.objects.filter().count() 
+        query = self.request.GET.get('q')
+        if query:
+            query_list = query.split()
+            print('Searching for ', file=sys.stderr)
+            print('-'.join(query_list), file=sys.stderr)
+            context['search_applied'] = '-'.join(query_list)
+        return context
     def get_queryset(self):
-        """Return Patients for the logged-in user."""
-        return Patient.objects.filter().order_by('name')  
+        """Return open Patients (can include search terms)"""
+        result = Patient.objects.filter().order_by('name') 
+        query = self.request.GET.get('q')
+        if query:
+            query_list = query.split()
+            result = result.filter(
+                reduce(operator.and_,
+                       (Q(name__icontains=q) for q in query_list)) |
+                reduce(operator.and_,
+                       (Q(code__icontains=q) for q in query_list)) |
+                reduce(operator.and_,
+                       (Q(reference_no__icontains=q) for q in query_list)) |
+                reduce(operator.and_,
+                       (Q(address__icontains=q) for q in query_list)) |    
+                reduce(operator.and_,
+                       (Q(email__icontains=q) for q in query_list)) |
+                reduce(operator.and_,
+                       (Q(phone_no_1__icontains=q) for q in query_list)) |
+                reduce(operator.and_,
+                       (Q(description__icontains=q) for q in query_list)) |
+                reduce(operator.and_,
+                       (Q(phone_no_2__icontains=q) for q in query_list)) |
+                reduce(operator.and_,
+                       (Q(dob__icontains=q) for q in query_list))
+            )
+        return result
 
 class PatientCreate(LoginRequiredMixin,CreateView):
     login_url = 'orthomodoweb:login'
@@ -282,7 +323,9 @@ class PatientCreate(LoginRequiredMixin,CreateView):
     model = Patient
     form = PatientForm
     template_name = 'orthomodoweb/patient/patient_add_form.html'
-    fields=['name','code','reference_no','email','phone_no_1','phone_no_2','address','dob','description']   
+    fields=['name','code','reference_no','email','phone_no_1','phone_no_2','address','dob','description'] 
+    def form_invalid(self, form):
+        return HttpResponse("form is invalid... " + str(form.errors))
     def form_valid(self, form):
         patient = form.save(commit=False)
         patient.user = self.request.user
@@ -295,6 +338,8 @@ class PatientUpdate(LoginRequiredMixin,UpdateView):
     form = PatientForm
     template_name = 'orthomodoweb/patient/patient_form.html'
     fields=['name','code','reference_no','email','phone_no_1','phone_no_2','address','dob','description']   
+    def form_invalid(self, form):
+        return HttpResponse("form is invalid... " + str(form.errors))
     def get_queryset(self):
         base_qs = super(PatientUpdate, self).get_queryset()
         return base_qs.filter()
@@ -317,7 +362,11 @@ class ClinicianView(LoginRequiredMixin,generic.ListView):
     template_name = 'orthomodoweb/clinician/clinician_list.html'
     def get_queryset(self):
         """Return Clinicians for the logged-in user."""
-        return Clinician.objects.filter().order_by('name')  
+        return Clinician.objects.filter().order_by('name') 
+    def get_context_data(self, **kwargs):
+        context=super(ClinicianView,self).get_context_data(**kwargs)
+        context['total_clinicians'] =  Clinician.objects.filter().count() 
+        return context
 
 class ClinicianCreate(LoginRequiredMixin,CreateView):
     login_url = 'orthomodoweb:login'
@@ -330,6 +379,8 @@ class ClinicianCreate(LoginRequiredMixin,CreateView):
         clinician = form.save(commit=False)
         clinician.user = self.request.user
         return super(ClinicianCreate, self).form_valid(form)
+    def form_invalid(self, form):
+        return HttpResponse("form is invalid... " + str(form.errors))
 
 class ClinicianUpdate(LoginRequiredMixin,UpdateView):
     login_url = 'orthomodoweb:login'
@@ -341,6 +392,8 @@ class ClinicianUpdate(LoginRequiredMixin,UpdateView):
     def get_queryset(self):
         base_qs = super(ClinicianUpdate, self).get_queryset()
         return base_qs.filter()
+    def form_invalid(self, form):
+        return HttpResponse("form is invalid... " + str(form.errors))
 
 class ClinicianDelete(LoginRequiredMixin,DeleteView):
     login_url = 'orthomodoweb:login'
@@ -361,6 +414,10 @@ class OrthoModelTypeView(LoginRequiredMixin,generic.ListView):
     def get_queryset(self):
         """Return OrthoModelTypes for the logged-in user."""
         return OrthoModelType.objects.filter().order_by('name')  
+    def get_context_data(self, **kwargs):
+        context=super(OrthoModelTypeView,self).get_context_data(**kwargs)
+        context['total_orthomodeltypes'] =  OrthoModelType.objects.filter().count() 
+        return context
 
 class OrthoModelTypeCreate(LoginRequiredMixin,CreateView):
     login_url = 'orthomodoweb:login'
@@ -373,6 +430,8 @@ class OrthoModelTypeCreate(LoginRequiredMixin,CreateView):
         orthomodeltype = form.save(commit=False)
         orthomodeltype.user = self.request.user
         return super(OrthoModelTypeCreate, self).form_valid(form)
+    def form_invalid(self, form):
+        return HttpResponse("form is invalid... " + str(form.errors))
 
 class OrthoModelTypeUpdate(LoginRequiredMixin,UpdateView):
     login_url = 'orthomodoweb:login'
@@ -384,6 +443,8 @@ class OrthoModelTypeUpdate(LoginRequiredMixin,UpdateView):
     def get_queryset(self):
         base_qs = super(OrthoModelTypeUpdate, self).get_queryset()
         return base_qs.filter()
+    def form_invalid(self, form):
+        return HttpResponse("form is invalid... " + str(form.errors))
 
 class OrthoModelTypeDelete(LoginRequiredMixin,DeleteView):
     login_url = 'orthomodoweb:login'
@@ -405,6 +466,10 @@ class CollectionTypeView(LoginRequiredMixin,generic.ListView):
     def get_queryset(self):
         """Return CollectionTypes for the logged-in user."""
         return CollectionType.objects.filter().order_by('name')  
+    def get_context_data(self, **kwargs):
+        context=super(CollectionTypeView,self).get_context_data(**kwargs)
+        context['total_collectiontypes'] =  CollectionType.objects.filter().count() 
+        return context
 
 class CollectionTypeCreate(LoginRequiredMixin,CreateView):
     login_url = 'orthomodoweb:login'
@@ -417,6 +482,8 @@ class CollectionTypeCreate(LoginRequiredMixin,CreateView):
         collectiontype = form.save(commit=False)
         collectiontype.user = self.request.user
         return super(CollectionTypeCreate, self).form_valid(form)
+    def form_invalid(self, form):
+        return HttpResponse("form is invalid... " + str(form.errors))
 
 class CollectionTypeUpdate(LoginRequiredMixin,UpdateView):
     login_url = 'orthomodoweb:login'
@@ -428,6 +495,8 @@ class CollectionTypeUpdate(LoginRequiredMixin,UpdateView):
     def get_queryset(self):
         base_qs = super(CollectionTypeUpdate, self).get_queryset()
         return base_qs.filter()
+    def form_invalid(self, form):
+        return HttpResponse("form is invalid... " + str(form.errors))
 
 class CollectionTypeDelete(LoginRequiredMixin,DeleteView):
     login_url = 'orthomodoweb:login'

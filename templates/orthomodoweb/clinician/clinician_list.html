@@ -1,25 +1,35 @@
 {% extends 'orthomodoweb/base.html' %}
 {% block content %}
-
-	<h1>Clinicians</h1>
-	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-	{% if object_list  %}
-		<ul>
-		{% for clinician in object_list  %}
-		<p>
-			<a href="{% url 'orthomodoweb:clinician-update' clinician.id %}">Clinician {{ clinician.id }}: <i>{{ clinician.code }}</i> / <strong>{{ clinician.name }}</strong> </li></a>
+	<div class="standard_page_container">
+		<div class="standard_page_container_header">Clinicians: {{ total_clinicians }}</div>
+	
+		{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+		
+		{% if object_list  %}			
+			<table>
+				<tr>					
+					<th class="header_group_2">ID</th>		
+					<th class="header_group_2">Code</th>		
+					<th class="header_group_2">Name</th>								
+					<th class="header_group_2">Description</th>
+				</tr>				
+			{% for clinician in object_list  %}
+				<tr>				
+					<td><a href="{% url 'orthomodoweb:clinician-update' clinician.id %}">Clinician {{ clinician.id }}</a> </td>
+					<td>{{ clinician.code }}</td>		
+					<td>{{ clinician.name }}</td>
+					<td>{{ clinician.description }}</td>
+					</li>
+				</tr>
+			{% endfor %}
+				
+			</table>
+		{% else %}
+			<p>No Clinicians found.</p>
+		{% endif %}
+		 <p>
+		 <a class = "button" href="{% url 'orthomodoweb:clinician-add' %}">Add Clinician</a>
 		</p>
-		{% endfor %}
-			
-		</ul>
-	{% else %}
-		<p>No Clinicians exist.</p>
-	{% endif %}
-	 <p>
-	 <a href="{% url 'orthomodoweb:clinician-add' %}">Add a NEW clinician</a>
-	</p>
-	<p>
-	 <a href="{% url 'orthomodoweb:home' %}">Back to HOME</a>
-	</p>
+	</div>
 
 {% endblock %}

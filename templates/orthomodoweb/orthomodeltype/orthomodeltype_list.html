@@ -1,25 +1,35 @@
 {% extends 'orthomodoweb/base.html' %}
 {% block content %}
-
-	<h1>OrthoModelTypes</h1>
-	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-	{% if object_list  %}
-		<ul>
-		{% for orthomodeltype in object_list  %}
-		<p>
-			<a href="{% url 'orthomodoweb:orthomodeltype-update' orthomodeltype.id %}">OrthoModelType {{ orthomodeltype.id }}: <i>{{ orthomodeltype.code }}</i> / <strong>{{ orthomodeltype.name }}</strong> / {{ orthomodeltype.description }}</li></a>
+	<div class="standard_page_container">
+		<div class="standard_page_container_header">Ortho Model Types: {{ total_orthomodeltypes }}</div>
+	
+		{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+		
+		{% if object_list  %}			
+			<table>
+				<tr>					
+					<th class="header_group_2">ID</th>		
+					<th class="header_group_2">Code</th>		
+					<th class="header_group_2">Name</th>								
+					<th class="header_group_2">Description</th>
+				</tr>				
+			{% for orthomodeltype in object_list  %}
+				<tr>				
+					<td><a href="{% url 'orthomodoweb:orthomodeltype-update' orthomodeltype.id %}">orthomodeltype {{ orthomodeltype.id }}</a> </td>
+					<td>{{ orthomodeltype.code }}</td>		
+					<td>{{ orthomodeltype.name }}</td>
+					<td>{{ orthomodeltype.description }}</td>
+					</li>
+				</tr>
+			{% endfor %}
+				
+			</table>
+		{% else %}
+			<p>No orthomodeltypes found.</p>
+		{% endif %}
+		 <p>
+		 <a class = "button" href="{% url 'orthomodoweb:orthomodeltype-add' %}">Add Orthomodel Type</a>
 		</p>
-		{% endfor %}
-			
-		</ul>
-	{% else %}
-		<p>No OrthoModelTypes exist.</p>
-	{% endif %}
-	 <p>
-	 <a href="{% url 'orthomodoweb:orthomodeltype-add' %}">Add a NEW orthomodeltype</a>
-	</p>
-	<p>
-	 <a href="{% url 'orthomodoweb:home' %}">Back to HOME</a>
-	</p>
+	</div>
 
 {% endblock %}

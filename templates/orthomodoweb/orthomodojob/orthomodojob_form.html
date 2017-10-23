@@ -3,12 +3,9 @@
 
 	<script>
 		$(document).ready(function() {
-			$('#scan_date').datepicker({ dateFormat: 'yy-mm-dd' });
-			$('#id_scan_date').datepicker({ dateFormat: 'yy-mm-dd' });
-			$('#print_date').datepicker({ dateFormat: 'yy-mm-dd' });
+			$('#id_scan_date').datepicker({ dateFormat: 'yy-mm-dd' });		
 			$('#id_print_date').datepicker({ dateFormat: 'yy-mm-dd' });
 			$('#id_planned_collection_date').datepicker({ dateFormat: 'yy-mm-dd' });
-			$('#planned_collection_date').datepicker({ dateFormat: 'yy-mm-dd' });
 		});
 	</script>
 	<script>
@@ -73,139 +70,136 @@
 	  </script>
 
 	 
-	<h1>OrthoModoJob: {{ orthomodojob.id }}</h1>
+	<div class="form_header">OM Job {{ orthomodojob.id }} for <a href="{% url 'orthomodoweb:patient-update' orthomodojob.patient.id %}"> ({{ orthomodojob.patient.name }}) </a></div> 
 	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-	
-	
+	<div class = "formcontainer_f">	
 	 
-	<form action="{% url 'orthomodoweb:orthomodojob-update' pk=orthomodojob.id %}" method="post">
-		{% csrf_token %}
-		
-		<p>
-			<strong>BASIC INFO</strong>
-			PATIENT: <a href="{% url 'orthomodoweb:patient-update' orthomodojob.patient.id %}">{{ orthomodojob.patient.name }}</a>
-			<input type=hidden name="patient" id="id_patient" value="{{ orthomodojob.patient.id }}">
-			SCAN DATE: <input type="text" name="scan_date" id="id_scan_date" maxlength="200" placeholder = "Scan Date" value = '{{ orthomodojob.scan_date|date:"Y-m-d" }}'>
+		<form action="" method="post">
+			{% csrf_token %}			
 			
+			<div class = "form_section">
+				<div class = "form_section_header"><strong>BASIC INFO</strong></div>
+				<input type=hidden name="patient" id="id_patient" value="{{ orthomodojob.patient.id }}">
 			
-			CLINICIAN: 
-			<select name="clinician" id = "id_clinician">				
-				{% for c in clinician_list %}
-					{% ifequal orthomodojob.clinician.id c.id %}
-						<option value="{{ c.id }}" selected="selected">{{ c.name }}</option>
-					{% else %}
-						<option value="{{ c.id }}">{{ c.name }}</option>	
-					{% endifequal %}
-				{% endfor %}
-			</select>
-		</p>
-	
-		
-	<div id="orthomodojob_accordion">
-		<h3>ORTHOTRAC INFO</h3>
-		<div>
-			<p class = "header_group_2">
-				ORTHOTRAC REFERENCE NO: <input type="text" name="orthotrac_reference_no" id="id_orthotrac_reference_no" maxlength="200" placeholder = "Orthotrac Reference no" value = "{{ orthomodojob.orthotrac_reference_no }}">
-				<br />
-				IS ANALYSED? <input type="checkbox" name="orthotrac_analysis_done" id="id_orthotrac_analysis_done" {% if orthomodojob.orthotrac_analysis_done %}checked{% endif %} >
-				<br />
-				ANALYSIS NOTES
-				<br />
-				<textarea  rows="5" cols="120" name="orthotrac_analysis_notes" id="id_orthotrac_analysis_notes" placeholder = "Day Main Text">{{ orthomodojob.orthotrac_analysis_notes }}</textarea>
-			</p>
-		</div>
-		<h3>PRINTING</h3>
-		<div>
-			<p class = "header_group_3">
-				PRINTER: 
-				<select name="printer" id = "id_printer">	
-					<option value="" selected="">---------</option>
-					{% for pr in printer_list %}
-						{% ifequal orthomodojob.printer.id pr.id %}
-							<option value="{{ pr.id }}" selected="selected">{{ pr.name }}</option>
+				<label for="id_scan_date">SCAN DATE:</label>
+				<input type="text" name="scan_date" id="id_scan_date" maxlength="200" placeholder = "Scan Date" value = '{{ orthomodojob.scan_date|date:"Y-m-d" }}'>
+				
+				<label for="id_clinician">CLINICIAN:</label>				 
+				<select name="clinician" id = "id_clinician">				
+					{% for c in clinician_list %}
+						{% ifequal orthomodojob.clinician.id c.id %}
+							<option value="{{ c.id }}" selected="selected">{{ c.name }}</option>
 						{% else %}
-							<option value="{{ pr.id }}">{{ pr.name }}</option>	
+							<option value="{{ c.id }}">{{ c.name }}</option>	
 						{% endifequal %}
 					{% endfor %}
-				</select>
-				<br />
-				IS AN STL FILE PREPARED? <input type="checkbox" name="is_stl_file_prepared" id="id_is_stl_file_prepared" {% if orthomodojob.is_stl_file_prepared %}checked{% endif %} >
-				<br />
-				PRINT DATE: <input type="text" name="print_date" id="id_print_date" maxlength="200" placeholder = "Print Date" value = '{{ orthomodojob.print_date|date:"Y-m-d" }}'>
-			</p>
-		</div>
-		<h3>MODEL DETAILS</h3>
-		  <div>
-			<p class = "header_group_4">MODEL TYPE: 
-				<select name="orthomodel_type" id = "id_orthomodel_type">	
-					<option value="" selected="">---------</option>
-					{% for omt in orthomodel_type_list %}
-						{% ifequal orthomodojob.orthomodel_type.id omt.id %}
-							<option value="{{ omt.id }}" selected="selected">{{ omt.name }}</option>
-						{% else %}
-							<option value="{{ omt.id }}">{{ omt.name }}</option>	
-						{% endifequal %}
-					{% endfor %}
-				</select>
-				<br />
-				ORTHO MODEL NOTES (NEEDED FOR)
-				<br />
-				<textarea  rows="5" cols="120" name="orthomodel_notes" id="id_orthomodel_notes" placeholder = "Day Main Text">{{ orthomodojob.orthomodel_notes }}</textarea>
-		
-			</p>		
+				</select>		
+			</div>
+				
 			
-		  </div>
-		  <h3>COLLECTION</h3>
+		<div id="orthomodojob_accordion">
+			<h3>ORTHOTRAC INFO</h3>
 			<div>
-				<p class = "header_group_5">
-					COLLECTION TYPE: 
-					<select name="collection_type" id = "id_collection_type">	
-						{% for ct in collection_type_list %}
-							{% ifequal orthomodojob.collection_type.id ct.id %}
-								<option value="{{ ct.id }}" selected="selected">{{ ct.name }}</option>
+				<p class = "header_group_2">
+					<label for="id_orthotrac_reference_no">ORTHOTRAC REFERENCE NO: </label>					
+					<input type="text" name="orthotrac_reference_no" id="id_orthotrac_reference_no" maxlength="200" placeholder = "Orthotrac Reference no" value = "{{ orthomodojob.orthotrac_reference_no }}">
+					<label for="id_orthotrac_analysis_done">IS ANALYSED?</label>
+					<input type="checkbox" name="orthotrac_analysis_done" id="id_orthotrac_analysis_done" {% if orthomodojob.orthotrac_analysis_done %}checked{% endif %} >
+					<br />
+					<label for="id_orthotrac_analysis_notes">ANALYSIS NOTES:</label>		
+					<br />					
+					<textarea  rows="5" cols="120" name="orthotrac_analysis_notes" id="id_orthotrac_analysis_notes" placeholder = "Orthotrac Analysis Notes">{{ orthomodojob.orthotrac_analysis_notes }}</textarea>
+				</p>
+			</div>
+			<h3>PRINTING</h3>
+			<div>
+				<p class = "header_group_3">
+					<label for="id_printer">PRINTER:</label>					 
+					<select name="printer" id = "id_printer">	
+						<option value="" selected="">---------</option>
+						{% for pr in printer_list %}
+							{% ifequal orthomodojob.printer.id pr.id %}
+								<option value="{{ pr.id }}" selected="selected">{{ pr.name }}</option>
 							{% else %}
-								<option value="{{ ct.id }}">{{ ct.name }}</option>	
+								<option value="{{ pr.id }}">{{ pr.name }}</option>	
 							{% endifequal %}
 						{% endfor %}
 					</select>
 					<br />
-					COLLECTION DATE: <input type="text" name="planned_collection_date" id="id_planned_collection_date" maxlength="200" placeholder = "Planned Collection Date" value = '{{ orthomodojob.planned_collection_date|date:"Y-m-d" }}'>
+					<label for="id_is_stl_file_prepared">IS AN STL FILE PREPARED?</label>
+					<input type="checkbox" name="is_stl_file_prepared" id="id_is_stl_file_prepared" {% if orthomodojob.is_stl_file_prepared %}checked{% endif %} >
 					<br />
-					COLLECTION TIME: <input type="text" name="planned_collection_time" id="id_planned_collection_time">
-					<br />
-					IS COLLECTED? <input type="checkbox" name="is_collected" id="id_is_collected" {% if orthomodojob.is_collected %}checked{% endif %} >
-					<br />
-					COLLECTION NOTES
-					<br />
-					<textarea  rows="5" cols="120" name="collection_notes" id="id_collection_notes" placeholder = "Day Main Text">{{ orthomodojob.collection_notes }}</textarea>		
+					<label for="id_print_date">PRINT DATE:</label>
+					<input type="text" name="print_date" id="id_print_date" maxlength="200" placeholder = "Print Date" value = '{{ orthomodojob.print_date|date:"Y-m-d" }}'>
 				</p>
-			</div>			
-	 </div>
-		
-		
-		<p class="status{% if orthomodojob.flagged %}_flagged{% endif %}">
-			IS FLAGGED? <input type="checkbox" name="flagged" id="id_flagged" {% if orthomodojob.flagged %}checked{% endif %} >
-			<br />
-			FLAG NOTES
-			<br />
-			<textarea  rows="5" cols="120" name="flag_status_note" id="id_flag_status_note" placeholder = "Flag Notes">{{ orthomodojob.flag_status_note }}</textarea>
-		
-		</p>
-		
-		<input type="submit" value=" SAVE " />
-	 </form>
-	 
-	 <p>
-	 <a href="{% url 'orthomodoweb:orthomodojob-add' %}">Add NEW OrthoModoJob</a>
-	</p>
-	 <p>
-	 <a href="{% url 'orthomodoweb:orthomodojob-delete' orthomodojob.id%}">Delete this OrthoModoJob</a>
-	</p>
-	<p>
-	 <a href="{% url 'orthomodoweb:orthomodojob-open-list' %}">View All OrthoModoJobs</a>
-	</p>
-	<p>
-	 <a href="{% url 'orthomodoweb:home' %}">Back to HOME</a>
-	</p>
+			</div>
+			<h3>MODEL DETAILS</h3>
+			  <div>
+				<p class = "header_group_4">
+					<label for="id_orthomodel_type">MODEL TYPE:</label>				 
+					<select name="orthomodel_type" id = "id_orthomodel_type">	
+						<option value="" selected="">---------</option>
+						{% for omt in orthomodel_type_list %}
+							{% ifequal orthomodojob.orthomodel_type.id omt.id %}
+								<option value="{{ omt.id }}" selected="selected">{{ omt.name }}</option>
+							{% else %}
+								<option value="{{ omt.id }}">{{ omt.name }}</option>	
+							{% endifequal %}
+						{% endfor %}
+					</select>
+					<br />
+					<label for="id_orthomodel_notes">ORTHO MODEL NOTES (NEEDED FOR):</label>
+					<br />
+					<textarea  rows="5" cols="120" name="orthomodel_notes" id="id_orthomodel_notes" placeholder = "OrthoModel (Needed For) Notes">{{ orthomodojob.orthomodel_notes }}</textarea>
+			
+				</p>		
+				
+			  </div>
+			  <h3>COLLECTION</h3>
+				<div>
+					<p class = "header_group_5">
+					<label for="id_collection_type">COLLECTION TYPE:</label>						 
+						<select name="collection_type" id = "id_collection_type">	
+							{% for ct in collection_type_list %}
+								{% ifequal orthomodojob.collection_type.id ct.id %}
+									<option value="{{ ct.id }}" selected="selected">{{ ct.name }}</option>
+								{% else %}
+									<option value="{{ ct.id }}">{{ ct.name }}</option>	
+								{% endifequal %}
+							{% endfor %}
+						</select>
+						<br />
+						<label for="id_planned_collection_date">COLLECTION DATE:</label>
+						 <input type="text" name="planned_collection_date" id="id_planned_collection_date" maxlength="200" placeholder = "Planned Collection Date" value = '{{ orthomodojob.planned_collection_date|date:"Y-m-d" }}'>
+						<br />
+						<label for="id_planned_collection_time">COLLECTION TIME:</label>
+						<input type="text" name="planned_collection_time" id="id_planned_collection_time" value = "{{ orthomodojob.planned_collection_time|date:'H:i' }}">
+						<br />
+						<label for="id_is_collected">IS COLLECTED?</label>
+						<input type="checkbox" name="is_collected" id="id_is_collected" {% if orthomodojob.is_collected %}checked{% endif %} > <em> This will remove the Job from the OPEN list </em>
+						<br />
+						<label for="id_collection_notes">COLLECTION NOTES:</label>						
+						<br />
+						<textarea  rows="5" cols="120" name="collection_notes" id="id_collection_notes" placeholder = "Collection Notes">{{ orthomodojob.collection_notes }}</textarea>		
+					</p>
+				</div>			
+		 </div>
+			
+			<div class="form_section">
+			<p class="status{% if orthomodojob.flagged %}_flagged{% endif %}">
+				<label for="id_flagged">IS FLAGGED?</label>	
+				<input type="checkbox" name="flagged" id="id_flagged" {% if orthomodojob.flagged %}checked{% endif %} >
+				<br />
+				<label for="id_flag_status_note">FLAG NOTES</label>				
+				<br />
+				<textarea  rows="5" cols="120" name="flag_status_note" id="id_flag_status_note" placeholder = "Flag Notes">{{ orthomodojob.flag_status_note }}</textarea>
+			
+			</p>
+			<input type=hidden name="selected_patient_id" value="{{ selected_patient.id }}">
+			<input class="button" type="submit" value=" SAVE " />
+			</div>
+			
+		 </form>
+	</div>
 
 {% endblock %}

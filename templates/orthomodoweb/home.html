@@ -2,31 +2,16 @@
 {% block content %}
 
 <div class = "frontpage">
-WELCOME TO ORTHOMODO!
+<p>
+ORTHOMODO-WEB: Manage your Ortho Model Patients and Jobs.
+</p>
 
-<p>
-<a href="{% url 'orthomodoweb:orthomodojob-open-list' %}">OPEN OrthoModo Jobs List</a>
-</p>
-<p>
-<a href="{% url 'orthomodoweb:orthomodojob-open-list' %}">ALL OrthoModo Jobs List</a>
-</p>
-<p>
-<a href="{% url 'orthomodoweb:patient-list' %}">Patients</a>
-<br />
-<a href="{% url 'orthomodoweb:patient-add' %}">Add a NEW patient</a>
-</p>
-<p>
-<a href="{% url 'orthomodoweb:printer-list' %}">Printers</a>
-</p>	
-<p>
-<a href="{% url 'orthomodoweb:clinician-list' %}">Clinicians</a>
-</p>
-<p>
-<a href="{% url 'orthomodoweb:orthomodeltype-list' %}">Orthomodel Types List</a>
-</p>
-<p>
-<a href="{% url 'orthomodoweb:collectiontype-list' %}">Collection Types List</a>
-</p>
+{% if user.get_username %}
+	You are Logged in as {{ user.get_username }}. If this is not you, please <a href="{% url 'orthomodoweb:logout' %}">LOGOUT</a>.
+{% else %}
+	You are not logged in. You will need to <a href="{% url 'orthomodoweb:login' %}">LOGIN</a> to View Information.
+{% endif %}
+
 </div>
 
 {% endblock %}
