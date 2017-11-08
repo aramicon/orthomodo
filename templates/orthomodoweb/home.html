@@ -8,30 +8,27 @@ $( function() {
 </script>
 
 <div class = "frontpage">
-<p>
+
 <h2>ORTHOMODO-WEB: Manage your Ortho Model Patients and Jobs.</h2>
-</p>
 
 {% if user.get_username %}
 	You are Logged in as {{ user.get_username }}. If this is not you, please <a href="{% url 'orthomodoweb:logout' %}">LOGOUT</a>
 	
 	<p>
 		Use the menu at the TOP to manage your patients and printing jobs.		
-	</p>
-	<p>
+	
 		Basic Guide:
 		<ol>
-		<li>Set up your Printers</li>
-		<li>Set up your Clinicians</li>
-		<li>Set up your Ortho Model Types</li>
-		<li>Set up your Collection Types</li>
-		<li>Create a Patient</li>
-		<li>Add a Ortho Job for that Patient</li>
-		<li>View and edit Ortho jobs</li>
-		
+			<li>Set up your Printers</li>
+			<li>Set up your Clinicians</li>
+			<li>Set up your Ortho Model Types</li>
+			<li>Set up your Collection Types</li>
+			<li>Create a Patient</li>
+			<li>Add a Ortho Job for that Patient</li>
+			<li>View and edit Ortho jobs</li>		
 		</ol>
 	</p>
-	<h1>TODAY</h1>
+	<h3>TODAY</h3>
 	<div id="tabs">
 	  <ul>
 		<li><a href="#tabs_scans">SCANS</a></li>

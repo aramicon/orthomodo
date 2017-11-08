@@ -62,10 +62,14 @@ class CollectionType(models.Model):
         return self.name
     def get_absolute_url(self):
        return reverse('orthomodoweb:collectiontype-update', kwargs={'pk': self.pk})
-       
+
+class ModelType(models.Model):     
+    name = models.CharField(max_length=30, unique=True)
+ 
 class OrthoModoJob(models.Model):      
     patient = models.ForeignKey(Patient, on_delete=models.PROTECT)
     clinician = models.ForeignKey(Clinician, on_delete=models.PROTECT)
+    model_type = models.ForeignKey(ModelType, on_delete=models.PROTECT)
     scan_date = models.DateField(blank=True, null=True)    
     scan_date_entered_by = models.ForeignKey(settings.AUTH_USER_MODEL,blank=True,null=True,related_name="orthomodojob_scan_date_entered_by")
     scan_date_entered_when = models.DateTimeField(blank=True, null=True)    

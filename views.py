@@ -25,7 +25,7 @@ import operator
 import csv
 
 
-from .models import Printer, Patient, Clinician, OrthoModelType, CollectionType, OrthoModoJob
+from .models import Printer, Patient, Clinician, ModelType, OrthoModelType, CollectionType, OrthoModoJob
 
 from orthomodoweb.forms import PrinterForm, PatientForm, ClinicianForm,OrthoModelTypeForm, CollectionTypeForm, OrthoModoJobForm
 
@@ -39,7 +39,7 @@ class HomeView(generic.TemplateView):
         tomorrow = today + timedelta(1)
         today_start = datetime.combine(today, time())
         today_end = datetime.combine(tomorrow, time())
-		#get jobs that have the selected date as the scan date (today)
+        #get jobs that have the selected date as the scan date (today)
         context['selected_day_jobs_scandate'] =  OrthoModoJob.objects.filter(scan_date__lte=today_end, scan_date__gte=today_start) 
         context['selected_day_jobs_printdate'] =  OrthoModoJob.objects.filter(print_date__lte=today_end, print_date__gte=today_start) 
         context['selected_day_jobs_plannedcollectiondate'] =  OrthoModoJob.objects.filter(planned_collection_date__lte=today_end, planned_collection_date__gte=today_start) 
@@ -195,7 +195,7 @@ class OrthoModoPatientJobCreate(LoginRequiredMixin,CreateView):
     model = OrthoModoJob
     form = OrthoModoJobForm
     template_name = 'orthomodoweb/patient/patient_add_job_form.html'
-    fields=['clinician','scan_date','orthotrac_reference_no','orthotrac_analysis_done','orthotrac_analysis_notes','printer','is_stl_file_prepared','is_printed','print_date','orthomodel_type','orthomodel_notes','collection_type','planned_collection_date','planned_collection_time','collection_notes','is_collected','flagged','flag_status_note']   
+    fields=['clinician','scan_date','orthotrac_reference_no','model_type','orthotrac_analysis_done','orthotrac_analysis_notes','printer','is_stl_file_prepared','is_printed','print_date','orthomodel_type','orthomodel_notes','collection_type','planned_collection_date','planned_collection_time','collection_notes','is_collected','flagged','flag_status_note']   
     def form_valid(self, form):
         print('save new job', file=sys.stderr)
         print(form.data['selected_patient_id'], file=sys.stderr)
@@ -240,6 +240,7 @@ class OrthoModoPatientJobCreate(LoginRequiredMixin,CreateView):
         context['clinician_list'] =  Clinician.objects.all()
         context['printer_list'] =  Printer.objects.all()
         context['orthomodel_type_list'] =  OrthoModelType.objects.all()
+        context['model_type_list'] = ModelType.objects.all().order_by('id') 
         context['collection_type_list'] =  CollectionType.objects.all()
         return context
 
@@ -249,7 +250,7 @@ class OrthoModoJobUpdate(LoginRequiredMixin,UpdateView):
     model = OrthoModoJob
     form = OrthoModoJobForm
     template_name = 'orthomodoweb/orthomodojob/orthomodojob_form.html'
-    fields=['patient','clinician','scan_date','orthotrac_reference_no','orthotrac_analysis_done','orthotrac_analysis_notes','printer','is_stl_file_prepared','is_printed','print_date','orthomodel_type','orthomodel_notes','collection_type','planned_collection_date','planned_collection_time','collection_notes','is_collected','flagged','flag_status_note']   
+    fields=['patient','clinician','scan_date','orthotrac_reference_no','model_type','orthotrac_analysis_done','orthotrac_analysis_notes','printer','is_stl_file_prepared','is_printed','print_date','orthomodel_type','orthomodel_notes','collection_type','planned_collection_date','planned_collection_time','collection_notes','is_collected','flagged','flag_status_note']   
     def get_queryset(self):
         base_qs = super(OrthoModoJobUpdate, self).get_queryset()
         return base_qs.filter()
@@ -260,6 +261,7 @@ class OrthoModoJobUpdate(LoginRequiredMixin,UpdateView):
         context['printer_list'] =  Printer.objects.all()
         context['orthomodel_type_list'] =  OrthoModelType.objects.all()
         context['collection_type_list'] =  CollectionType.objects.all()
+        context['model_type_list'] = ModelType.objects.all().order_by('id') 
         #print(context['patient_list'], file=sys.stderr)      
         return context
     def form_invalid(self, form):

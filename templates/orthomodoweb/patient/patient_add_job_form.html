@@ -79,9 +79,19 @@
 			
 			<div class = "form_section">
 				<div class = "form_section_header"><strong>BASIC INFO</strong></div>
+				
+				<label for="id_model_type">MODEL TYPE:</label>				 
+				<select name="model_type" id = "id_model_type">				
+					{% for md in model_type_list %}
+						{% ifequal orthomodojob.model_type.id md.id %}
+							<option value="{{ md.id }}" selected="selected">{{ md.name }}</option>
+						{% else %}
+							<option value="{{ md.id }}">{{ md.name }}</option>	
+						{% endifequal %}
+					{% endfor %}
+				</select>		
 			
-				<label for="id_scan_date">SCAN DATE:</label>
-				<input type="text" name="scan_date" id="id_scan_date" maxlength="200" placeholder = "Scan Date" value = '{{ orthomodojob.scan_date|date:"Y-m-d" }}'>
+				
 				
 				<label for="id_clinician">CLINICIAN:</label>				 
 				<select name="clinician" id = "id_clinician">				
@@ -92,7 +102,11 @@
 							<option value="{{ c.id }}">{{ c.name }}</option>	
 						{% endifequal %}
 					{% endfor %}
-				</select>		
+				</select>	
+
+				<label for="id_scan_date">SCAN DATE:</label>
+				<input type="text" name="scan_date" id="id_scan_date" maxlength="200" placeholder = "Scan Date" value = '{{ orthomodojob.scan_date|date:"Y-m-d" }}'>
+				
 			</div>
 				
 			
