@@ -1,13 +1,318 @@
 {% extends 'orthomodoweb/base.html' %}
 {% block content %}
+<script>
+$( function() {
+	// tabs
+	$( "#tabs" ).tabs();
+	});
+</script>
 
 <div class = "frontpage">
 <p>
-ORTHOMODO-WEB: Manage your Ortho Model Patients and Jobs.
+<h2>ORTHOMODO-WEB: Manage your Ortho Model Patients and Jobs.</h2>
 </p>
 
 {% if user.get_username %}
-	You are Logged in as {{ user.get_username }}. If this is not you, please <a href="{% url 'orthomodoweb:logout' %}">LOGOUT</a>.
+	You are Logged in as {{ user.get_username }}. If this is not you, please <a href="{% url 'orthomodoweb:logout' %}">LOGOUT</a>
+	
+	<p>
+		Use the menu at the TOP to manage your patients and printing jobs.		
+	</p>
+	<p>
+		Basic Guide:
+		<ol>
+		<li>Set up your Printers</li>
+		<li>Set up your Clinicians</li>
+		<li>Set up your Ortho Model Types</li>
+		<li>Set up your Collection Types</li>
+		<li>Create a Patient</li>
+		<li>Add a Ortho Job for that Patient</li>
+		<li>View and edit Ortho jobs</li>
+		
+		</ol>
+	</p>
+	<h1>TODAY</h1>
+	<div id="tabs">
+	  <ul>
+		<li><a href="#tabs_scans">SCANS</a></li>
+		<li><a href="#tabs_print">PRINT</a></li>
+		<li><a href="#tabs_collect">COLLECT</a></li>
+		<li><a href="#tabs_updated">UPDATED</a></li>
+	  </ul>	 	   	   	  
+	   <div id="tabs_scans">
+			<div class="datatable">
+				<div class = "datatable_header">Jobs:Scan date</div>
+					<table>
+					<tr>				
+							<th colspan="4" class="header_group_1">Basic Info</th>	
+							<th colspan="3" class="thickborderleft header_group_2">Orthotrac</th>
+							<th colspan="4" class="thickborderleft header_group_3">3d Printing</th>
+							<th colspan="2" class="thickborderleft header_group_4">Model info</th>
+							<th colspan="5" class="thickborderleft header_group_5">Collection</th>
+							<th colspan="5" class="thickborderleft header_group_6">Flag Status</th>
+						</tr>
+						<tr>
+							<th>ID</th>
+							<th>Scan Date</th>
+							<th>Patient</th>
+							<th>Clinician</th>				
+							<th class="thickborderleft">Ref No</th>
+							<th>Analysed?</th>
+							<th>Notes</th>
+							<th class="thickborderleft">Printer</th>
+							<th>STL file?</th>
+							<th>Printed?</th>
+							<th>Print Date</th>
+							<th class="thickborderleft">Type</th>
+							<th>Notes</th>
+							<th class="thickborderleft">Type</th>
+							<th>Planned Date</th>
+							<th>Time</th>
+							<th>Notes</th>
+							<th>Collected?</th>
+							<th class="thickborderleft">Status</th>
+							<th >Notes</th>
+						</tr>
+					{% if selected_day_jobs_scandate %}
+					{% for orthomodojob in selected_day_jobs_scandate.all  %}
+						<tr>
+					
+						<td><a href="{% url 'orthomodoweb:orthomodojob-update' orthomodojob.id %}">OMJOB_{{ orthomodojob.id }}</a></td>
+						<td>{{ orthomodojob.scan_date|date:"Y-m-d" }}</td>
+						<td><a href="{% url 'orthomodoweb:patient-update' orthomodojob.patient.id %}">{{ orthomodojob.patient.name }}</a></td>
+						<td>{% if orthomodojob.clinician %}<a href="{% url 'orthomodoweb:clinician-update' orthomodojob.clinician.id %}">{{ orthomodojob.clinician.name }}</a>{% endif %}</td> 			
+						<td class="thickborderleft">{{ orthomodojob.orthotrac_reference_no }}</td>
+						<td>{{ orthomodojob.orthotrac_analysis_done|yesno:"Yes,No" }}</td>
+						<td>{{ orthomodojob.orthotrac_analysis_notes }}</td>
+						<td class="thickborderleft">{% if orthomodojob.printer %}<a href="{% url 'orthomodoweb:printer-update' orthomodojob.printer.id %}">{{ orthomodojob.printer.name }}</a>{% endif %}</td>
+						<td>{{ orthomodojob.is_stl_file_prepared|yesno:"Yes,No" }}</td>
+						<td>{{ orthomodojob.is_printed|yesno:"Yes,No" }}</td>
+						<td>{{ orthomodojob.print_date|date:"Y-m-d" }}</td>
+						<td class="thickborderleft">{% if orthomodojob.orthomodel_type %}<a href="{% url 'orthomodoweb:orthomodeltype-update' orthomodojob.orthomodel_type.id %}">{{ orthomodojob.orthomodel_type.name }}</a>{% endif %}</td>
+						<td>{{ orthomodojob.orthomodel_notes }}</td>
+						<td class="thickborderleft">{% if orthomodojob.collection_type %}<a href="{% url 'orthomodoweb:collectiontype-update' orthomodojob.collection_type.id %}">{{ orthomodojob.collection_type.name }}</a>{% endif %}</td>
+						<td>{{ orthomodojob.planned_collection_date|date:"Y-m-d" }}</td>
+						<td>{{ orthomodojob.planned_collection_time }}</td>
+						<td>{{ orthomodojob.collection_notes }}</td>			
+						<td>{{ orthomodojob.is_collected|yesno:"Yes,No" }}</td>
+						<td class="thickborderleft status{% if orthomodojob.flagged %}_flagged{% endif %}">{{ orthomodojob.flagged|yesno:"FLAGGED,normal" }}</td>
+						<td class="status{% if orthomodojob.flagged %}_flagged{% endif %}">{{ orthomodojob.flag_status_note }}</td>
+						</tr>
+					{% endfor %}
+					</table>	
+					
+				{% else %}
+					<p class="emptylist">No OrthoModoJobs found for this scan date.</p>
+				{% endif %}
+			</div>
+			
+		</div>
+	   <div id="tabs_print">
+			<div class="datatable">
+				<div class = "datatable_header">Jobs for printing/printed (selected date)</div>
+					<table>
+					<tr>				
+							<th colspan="4" class="header_group_1">Basic Info</th>	
+							<th colspan="3" class="thickborderleft header_group_2">Orthotrac</th>
+							<th colspan="4" class="thickborderleft header_group_3">3d Printing</th>
+							<th colspan="2" class="thickborderleft header_group_4">Model info</th>
+							<th colspan="5" class="thickborderleft header_group_5">Collection</th>
+							<th colspan="5" class="thickborderleft header_group_6">Flag Status</th>
+						</tr>
+						<tr>
+							<th>ID</th>
+							<th>Scan Date</th>
+							<th>Patient</th>
+							<th>Clinician</th>				
+							<th class="thickborderleft">Ref No</th>
+							<th>Analysed?</th>
+							<th>Notes</th>
+							<th class="thickborderleft">Printer</th>
+							<th>STL file?</th>
+							<th>Printed?</th>
+							<th>Print Date</th>
+							<th class="thickborderleft">Type</th>
+							<th>Notes</th>
+							<th class="thickborderleft">Type</th>
+							<th>Planned Date</th>
+							<th>Time</th>
+							<th>Notes</th>
+							<th>Collected?</th>
+							<th class="thickborderleft">Status</th>
+							<th >Notes</th>
+						</tr>
+					{% if selected_day_jobs_scandate %}
+					{% for orthomodojob in selected_day_jobs_printdate.all  %}
+						<tr>					
+						<td><a href="{% url 'orthomodoweb:orthomodojob-update' orthomodojob.id %}">OMJOB_{{ orthomodojob.id }}</a></td>
+						<td>{{ orthomodojob.scan_date|date:"Y-m-d" }}</td>
+						<td><a href="{% url 'orthomodoweb:patient-update' orthomodojob.patient.id %}">{{ orthomodojob.patient.name }}</a></td>
+						<td>{% if orthomodojob.clinician %}<a href="{% url 'orthomodoweb:clinician-update' orthomodojob.clinician.id %}">{{ orthomodojob.clinician.name }}</a>{% endif %}</td> 			
+						<td class="thickborderleft">{{ orthomodojob.orthotrac_reference_no }}</td>
+						<td>{{ orthomodojob.orthotrac_analysis_done|yesno:"Yes,No" }}</td>
+						<td>{{ orthomodojob.orthotrac_analysis_notes }}</td>
+						<td class="thickborderleft">{% if orthomodojob.printer %}<a href="{% url 'orthomodoweb:printer-update' orthomodojob.printer.id %}">{{ orthomodojob.printer.name }}</a>{% endif %}</td>
+						<td>{{ orthomodojob.is_stl_file_prepared|yesno:"Yes,No" }}</td>
+						<td>{{ orthomodojob.is_printed|yesno:"Yes,No" }}</td>
+						<td>{{ orthomodojob.print_date|date:"Y-m-d" }}</td>
+						<td class="thickborderleft">{% if orthomodojob.orthomodel_type %}<a href="{% url 'orthomodoweb:orthomodeltype-update' orthomodojob.orthomodel_type.id %}">{{ orthomodojob.orthomodel_type.name }}</a>{% endif %}</td>
+						<td>{{ orthomodojob.orthomodel_notes }}</td>
+						<td class="thickborderleft">{% if orthomodojob.collection_type %}<a href="{% url 'orthomodoweb:collectiontype-update' orthomodojob.collection_type.id %}">{{ orthomodojob.collection_type.name }}</a>{% endif %}</td>
+						<td>{{ orthomodojob.planned_collection_date|date:"Y-m-d" }}</td>
+						<td>{{ orthomodojob.planned_collection_time }}</td>
+						<td>{{ orthomodojob.collection_notes }}</td>			
+						<td>{{ orthomodojob.is_collected|yesno:"Yes,No" }}</td>
+						<td class="thickborderleft status{% if orthomodojob.flagged %}_flagged{% endif %}">{{ orthomodojob.flagged|yesno:"FLAGGED,normal" }}</td>
+						<td class="status{% if orthomodojob.flagged %}_flagged{% endif %}">{{ orthomodojob.flag_status_note }}</td>
+						</tr>
+					{% endfor %}
+					</table>	
+					
+				{% else %}
+					<p class="emptylist">No OrthoModoJobs found for this scan date.</p>
+				{% endif %}
+			</div>
+			
+	  </div>
+	  <div id="tabs_collect">
+			<div class="datatable">
+				<div class = "datatable_header">Jobs for collection/delivery (selected date)</div>
+					<table>
+					<tr>				
+							<th colspan="4" class="header_group_1">Basic Info</th>	
+							<th colspan="3" class="thickborderleft header_group_2">Orthotrac</th>
+							<th colspan="4" class="thickborderleft header_group_3">3d Printing</th>
+							<th colspan="2" class="thickborderleft header_group_4">Model info</th>
+							<th colspan="5" class="thickborderleft header_group_5">Collection</th>
+							<th colspan="5" class="thickborderleft header_group_6">Flag Status</th>
+						</tr>
+						<tr>
+							<th>ID</th>
+							<th>Scan Date</th>
+							<th>Patient</th>
+							<th>Clinician</th>				
+							<th class="thickborderleft">Ref No</th>
+							<th>Analysed?</th>
+							<th>Notes</th>
+							<th class="thickborderleft">Printer</th>
+							<th>STL file?</th>
+							<th>Printed?</th>
+							<th>Print Date</th>
+							<th class="thickborderleft">Type</th>
+							<th>Notes</th>
+							<th class="thickborderleft">Type</th>
+							<th>Planned Date</th>
+							<th>Time</th>
+							<th>Notes</th>
+							<th>Collected?</th>
+							<th class="thickborderleft">Status</th>
+							<th >Notes</th>
+						</tr>
+					{% if selected_day_jobs_scandate %}
+					{% for orthomodojob in selected_day_jobs_plannedcollectiondate.all  %}
+						<tr>					
+						<td><a href="{% url 'orthomodoweb:orthomodojob-update' orthomodojob.id %}">OMJOB_{{ orthomodojob.id }}</a></td>
+						<td>{{ orthomodojob.scan_date|date:"Y-m-d" }}</td>
+						<td><a href="{% url 'orthomodoweb:patient-update' orthomodojob.patient.id %}">{{ orthomodojob.patient.name }}</a></td>
+						<td>{% if orthomodojob.clinician %}<a href="{% url 'orthomodoweb:clinician-update' orthomodojob.clinician.id %}">{{ orthomodojob.clinician.name }}</a>{% endif %}</td> 			
+						<td class="thickborderleft">{{ orthomodojob.orthotrac_reference_no }}</td>
+						<td>{{ orthomodojob.orthotrac_analysis_done|yesno:"Yes,No" }}</td>
+						<td>{{ orthomodojob.orthotrac_analysis_notes }}</td>
+						<td class="thickborderleft">{% if orthomodojob.printer %}<a href="{% url 'orthomodoweb:printer-update' orthomodojob.printer.id %}">{{ orthomodojob.printer.name }}</a>{% endif %}</td>
+						<td>{{ orthomodojob.is_stl_file_prepared|yesno:"Yes,No" }}</td>
+						<td>{{ orthomodojob.is_printed|yesno:"Yes,No" }}</td>
+						<td>{{ orthomodojob.print_date|date:"Y-m-d" }}</td>
+						<td class="thickborderleft">{% if orthomodojob.orthomodel_type %}<a href="{% url 'orthomodoweb:orthomodeltype-update' orthomodojob.orthomodel_type.id %}">{{ orthomodojob.orthomodel_type.name }}</a>{% endif %}</td>
+						<td>{{ orthomodojob.orthomodel_notes }}</td>
+						<td class="thickborderleft">{% if orthomodojob.collection_type %}<a href="{% url 'orthomodoweb:collectiontype-update' orthomodojob.collection_type.id %}">{{ orthomodojob.collection_type.name }}</a>{% endif %}</td>
+						<td>{{ orthomodojob.planned_collection_date|date:"Y-m-d" }}</td>
+						<td>{{ orthomodojob.planned_collection_time }}</td>
+						<td>{{ orthomodojob.collection_notes }}</td>			
+						<td>{{ orthomodojob.is_collected|yesno:"Yes,No" }}</td>
+						<td class="thickborderleft status{% if orthomodojob.flagged %}_flagged{% endif %}">{{ orthomodojob.flagged|yesno:"FLAGGED,normal" }}</td>
+						<td class="status{% if orthomodojob.flagged %}_flagged{% endif %}">{{ orthomodojob.flag_status_note }}</td>
+						</tr>
+					{% endfor %}
+					</table>	
+					
+				{% else %}
+					<p class="emptylist">No OrthoModoJobs found for this scan date.</p>
+				{% endif %}
+			</div>
+			
+	  </div>
+	  <div id="tabs_updated">
+			<div class="datatable">
+				<div class = "datatable_header">Jobs that were updated (selected date)</div>
+					<table>
+					<tr>				
+							<th colspan="4" class="header_group_1">Basic Info</th>	
+							<th colspan="3" class="thickborderleft header_group_2">Orthotrac</th>
+							<th colspan="4" class="thickborderleft header_group_3">3d Printing</th>
+							<th colspan="2" class="thickborderleft header_group_4">Model info</th>
+							<th colspan="5" class="thickborderleft header_group_5">Collection</th>
+							<th colspan="5" class="thickborderleft header_group_6">Flag Status</th>
+						</tr>
+						<tr>
+							<th>ID</th>
+							<th>Scan Date</th>
+							<th>Patient</th>
+							<th>Clinician</th>				
+							<th class="thickborderleft">Ref No</th>
+							<th>Analysed?</th>
+							<th>Notes</th>
+							<th class="thickborderleft">Printer</th>
+							<th>STL file?</th>
+							<th>Printed?</th>
+							<th>Print Date</th>
+							<th class="thickborderleft">Type</th>
+							<th>Notes</th>
+							<th class="thickborderleft">Type</th>
+							<th>Planned Date</th>
+							<th>Time</th>
+							<th>Notes</th>
+							<th>Collected?</th>
+							<th class="thickborderleft">Status</th>
+							<th >Notes</th>
+						</tr>
+					{% if selected_day_jobs_scandate %}
+					{% for orthomodojob in selected_day_jobs_dateupdated.all  %}
+						<tr>					
+						<td><a href="{% url 'orthomodoweb:orthomodojob-update' orthomodojob.id %}">OMJOB_{{ orthomodojob.id }}</a></td>
+						<td>{{ orthomodojob.scan_date|date:"Y-m-d" }}</td>
+						<td><a href="{% url 'orthomodoweb:patient-update' orthomodojob.patient.id %}">{{ orthomodojob.patient.name }}</a></td>
+						<td>{% if orthomodojob.clinician %}<a href="{% url 'orthomodoweb:clinician-update' orthomodojob.clinician.id %}">{{ orthomodojob.clinician.name }}</a>{% endif %}</td> 			
+						<td class="thickborderleft">{{ orthomodojob.orthotrac_reference_no }}</td>
+						<td>{{ orthomodojob.orthotrac_analysis_done|yesno:"Yes,No" }}</td>
+						<td>{{ orthomodojob.orthotrac_analysis_notes }}</td>
+						<td class="thickborderleft">{% if orthomodojob.printer %}<a href="{% url 'orthomodoweb:printer-update' orthomodojob.printer.id %}">{{ orthomodojob.printer.name }}</a>{% endif %}</td>
+						<td>{{ orthomodojob.is_stl_file_prepared|yesno:"Yes,No" }}</td>
+						<td>{{ orthomodojob.is_printed|yesno:"Yes,No" }}</td>
+						<td>{{ orthomodojob.print_date|date:"Y-m-d" }}</td>
+						<td class="thickborderleft">{% if orthomodojob.orthomodel_type %}<a href="{% url 'orthomodoweb:orthomodeltype-update' orthomodojob.orthomodel_type.id %}">{{ orthomodojob.orthomodel_type.name }}</a>{% endif %}</td>
+						<td>{{ orthomodojob.orthomodel_notes }}</td>
+						<td class="thickborderleft">{% if orthomodojob.collection_type %}<a href="{% url 'orthomodoweb:collectiontype-update' orthomodojob.collection_type.id %}">{{ orthomodojob.collection_type.name }}</a>{% endif %}</td>
+						<td>{{ orthomodojob.planned_collection_date|date:"Y-m-d" }}</td>
+						<td>{{ orthomodojob.planned_collection_time }}</td>
+						<td>{{ orthomodojob.collection_notes }}</td>			
+						<td>{{ orthomodojob.is_collected|yesno:"Yes,No" }}</td>
+						<td class="thickborderleft status{% if orthomodojob.flagged %}_flagged{% endif %}">{{ orthomodojob.flagged|yesno:"FLAGGED,normal" }}</td>
+						<td class="status{% if orthomodojob.flagged %}_flagged{% endif %}">{{ orthomodojob.flag_status_note }}</td>
+						</tr>
+					{% endfor %}
+					</table>	
+					
+				{% else %}
+					<p class="emptylist">No OrthoModoJobs found for this scan date.</p>
+				{% endif %}
+			</div>
+	  </div>
+	</div>
+	
+	<p>
+	You can download a CSV/Excel file of <strong>all</strong> Ortho Jobs <a href="{% url 'orthomodoweb:export_as_csv' %}">HERE</a>
+	</p>
+	
 {% else %}
 	You are not logged in. You will need to <a href="{% url 'orthomodoweb:login' %}">LOGIN</a> to View Information.
 {% endif %}

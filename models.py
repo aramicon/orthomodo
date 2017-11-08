@@ -68,7 +68,7 @@ class OrthoModoJob(models.Model):
     clinician = models.ForeignKey(Clinician, on_delete=models.PROTECT)
     scan_date = models.DateField(blank=True, null=True)    
     scan_date_entered_by = models.ForeignKey(settings.AUTH_USER_MODEL,blank=True,null=True,related_name="orthomodojob_scan_date_entered_by")
-    scan_date_when_added = models.DateTimeField(blank=True, null=True)    
+    scan_date_entered_when = models.DateTimeField(blank=True, null=True)    
     orthotrac_reference_no = models.CharField(max_length=100,blank=True)
     orthotrac_analysis_done = models.BooleanField(default=None)
     orthotrac_analysis_notes = models.TextField(blank=True)    
@@ -93,7 +93,9 @@ class OrthoModoJob(models.Model):
     flag_status_set_by = models.ForeignKey(settings.AUTH_USER_MODEL,blank=True,null=True,related_name="orthomodojob_flag_status_set_by")
     flag_status_set_when = models.DateTimeField(blank=True, null=True)
     flag_status_note = models.TextField(blank=True)
+    last_updated_by = models.ForeignKey(settings.AUTH_USER_MODEL,blank=True,null=True,related_name="orthomodojob_last_updated_by")
     date_updated = models.DateTimeField('Date updated',auto_now=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL,blank=True,null=True,related_name="orthomodojob_created_by")
     date_created = models.DateTimeField('Date Created',auto_now_add=True)
     def __str__(self):
         return self.name

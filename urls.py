@@ -9,6 +9,9 @@ app_name='orthomodoweb'
 urlpatterns = [
     #home page
     url(r'^home/$',views.HomeView.as_view(),name='home'),
+	
+	#export
+	url(r'^export_as_csv/$',views.export_as_csv,name='export_as_csv'),
     
     #orthomodojob
     url(r'^orthomodojob/open/$', views.OrthoModoJobViewOpen.as_view(), name='orthomodojob-open-list'),

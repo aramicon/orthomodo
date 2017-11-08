@@ -1,6 +1,8 @@
 {% extends 'orthomodoweb/base.html' %}
+{% load tz %}
 {% block content %}
-
+{% localtime on %}
+{% get_current_timezone as TIME_ZONE %}
 	<script>
 		$(document).ready(function() {
 			$('#id_scan_date').datepicker({ dateFormat: 'yy-mm-dd' });		
@@ -64,6 +66,12 @@
 		  active: false,
 		  heightStyle: "content"
 		});
+		$( "#orthomodojob_info_accordion" ).accordion({
+		  collapsible: true,
+		  active: false,
+		  heightStyle: "content"
+		});
+		
 		
 		
 	  } );
@@ -128,6 +136,9 @@
 					<br />
 					<label for="id_is_stl_file_prepared">IS AN STL FILE PREPARED?</label>
 					<input type="checkbox" name="is_stl_file_prepared" id="id_is_stl_file_prepared" {% if orthomodojob.is_stl_file_prepared %}checked{% endif %} >
+					<br />
+					<label for="id_is_printed">IS PRINTED?</label>
+					<input type="checkbox" name="is_printed" id="id_is_printed" {% if orthomodojob.is_printed %}checked{% endif %} >
 					<br />
 					<label for="id_print_date">PRINT DATE:</label>
 					<input type="text" name="print_date" id="id_print_date" maxlength="200" placeholder = "Print Date" value = '{{ orthomodojob.print_date|date:"Y-m-d" }}'>
@@ -198,8 +209,24 @@
 			<input type=hidden name="selected_patient_id" value="{{ selected_patient.id }}">
 			<input class="button" type="submit" value=" SAVE " />
 			</div>
-			
+			<div id="orthomodojob_info_accordion">
+			<h3>UPDATE HISTORY DETAILS</h3>
+			<div>
+				<ul>
+					<li>OrthoModo Job Created by {{ orthomodojob.created_by }}, {{ orthomodojob.date_created|date:'Y-m-d (H:i)' }}</li>
+					<li>Last Updated By {{ orthomodojob.last_updated_by }}, {{ orthomodojob.date_updated|date:'Y-m-d (H:i)' }}</li>
+					<li>Scan Date set by {{ orthomodojob.scan_date_entered_by }}, {{ orthomodojob.scan_date_entered_when|date:'Y-m-d (H:i)' }}</li>
+					<li>STL file marked as printed by {{ orthomodojob.stl_marked_as_prepared_by }}, {{ orthomodojob.stl_marked_as_prepared_when|date:'Y-m-d (H:i)' }}</li>
+					<li>Is Printed marked by {{ orthomodojob.is_printed_marked_by }}, {{ orthomodojob.is_printed_marked_when|date:'Y-m-d (H:i)' }}</li>
+					<li>Is Collected marked by {{ orthomodojob.is_collected_marked_by }}, {{ orthomodojob.is_collected_marked_when|date:'Y-m-d (H:i)' }}</li>
+					<li>Is Flagged marked by {{ orthomodojob.flag_status_set_by }}, {{ orthomodojob.flag_status_set_when|date:'Y-m-d (H:i)' }}</li>
+				</ul>
+			</div>
+				
+		 </div>
+		 
 		 </form>
+		 
 	</div>
-
+{% endlocaltime %}
 {% endblock %}

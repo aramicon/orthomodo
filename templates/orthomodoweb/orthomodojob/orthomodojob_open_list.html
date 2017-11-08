@@ -14,19 +14,13 @@
 			
 		<table>
 		<tr>
-				
-				<th colspan="4" class="header_group_1">Basic Info</th>				
-							
+				<th colspan="4" class="header_group_1">Basic Info</th>
 				<th colspan="3" class="thickborderleft header_group_2">Orthotrac</th>
-				
 				<th colspan="4" class="thickborderleft header_group_3">3d Printing</th>
-				
 				<th colspan="2" class="thickborderleft header_group_4">Model info</th>
-				
 				<th colspan="5" class="thickborderleft header_group_5">Collection</th>
-				
-				<th colspan="5" class="thickborderleft header_group_6">Flag Status</th>
-				
+				<th colspan="2" class="thickborderleft header_group_6">Flag Status</th>
+				<th colspan="2" class="thickborderleft header_group_1">Last Updated</th>
 			</tr>
 			<tr>
 				<th>ID</th>
@@ -49,6 +43,8 @@
 				<th>Collected?</th>
 				<th class="thickborderleft">Status</th>
 				<th >Notes</th>
+				<th >By</th>
+				<th >When</th>
 			</tr>
 		{% for orthomodojob in object_list  %}
 			<tr>
@@ -73,6 +69,8 @@
 			<td>{{ orthomodojob.is_collected|yesno:"Yes,No" }}</td>
 			<td class="thickborderleft status{% if orthomodojob.flagged %}_flagged{% endif %}">{{ orthomodojob.flagged|yesno:"FLAGGED,normal" }}</td>
 			<td class="status{% if orthomodojob.flagged %}_flagged{% endif %}">{{ orthomodojob.flag_status_note }}</td>
+			<td>{{ orthomodojob.last_updated_by }}</td>
+			<td>{{ orthomodojob.date_updated|date:'Y-m-d (H:i)' }}</td>
 			</tr>
 		{% endfor %}
 		</table>	

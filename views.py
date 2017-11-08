@@ -13,7 +13,7 @@ from django.contrib.auth import login, authenticate
 #from django.contrib.auth.forms import UserCreationForm
 import math
 import sys
-import datetime
+from datetime import datetime, timedelta, time
 
 from django.db import connections
 from django.db.models import Count, Min, Sum, Avg, F, Q
@@ -21,6 +21,8 @@ from django.http import JsonResponse
 
 from functools import reduce
 import operator
+
+import csv
 
 
 from .models import Printer, Patient, Clinician, OrthoModelType, CollectionType, OrthoModoJob
@@ -31,6 +33,20 @@ from orthomodoweb.forms import PrinterForm, PatientForm, ClinicianForm,OrthoMode
 #***************HOME PAGE***********
 class HomeView(generic.TemplateView):
     template_name = 'orthomodoweb/home.html'
+    def get_context_data(self, **kwargs):
+        context=super(HomeView,self).get_context_data(**kwargs)
+        today = datetime.now().date()
+        tomorrow = today + timedelta(1)
+        today_start = datetime.combine(today, time())
+        today_end = datetime.combine(tomorrow, time())
+		#get jobs that have the selected date as the scan date (today)
+        context['selected_day_jobs_scandate'] =  OrthoModoJob.objects.filter(scan_date__lte=today_end, scan_date__gte=today_start) 
+        context['selected_day_jobs_printdate'] =  OrthoModoJob.objects.filter(print_date__lte=today_end, print_date__gte=today_start) 
+        context['selected_day_jobs_plannedcollectiondate'] =  OrthoModoJob.objects.filter(planned_collection_date__lte=today_end, planned_collection_date__gte=today_start) 
+        context['selected_day_jobs_dateupdated'] =  OrthoModoJob.objects.filter(date_updated__lte=today_end, date_updated__gte=today_start) 
+        
+       
+        return context
     
 #**************SIGNUP*****************
 def signup(request):
@@ -45,6 +61,21 @@ def signup(request):
             return redirect('orthomodoweb:home')
     else:
         return redirect('orthomodoweb:home')
+
+        
+        
+def export_as_csv(request):
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="orthomodo_export.csv"'
+
+    writer = csv.writer(response,delimiter=',', quoting=csv.QUOTE_ALL, quotechar='"')
+    writer.writerow(["patient.name", "patient.code", "clinician.name", "scan_date", "scan_date_entered_by", "scan_date_entered_when", "orthotrac_reference_no", "orthotrac_analysis_done", "orthotrac_analysis_notes", "printer", "is_stl_file_prepared", "stl_marked_as_prepared_by", "stl_marked_as_prepared_when", "is_printed", "print_date", "is_printed_marked_by", "is_printed_marked_when", "orthomodel_type", "orthomodel_notes", "collection_type", "planned_collection_date", "planned_collection_time", "collection_notes", "is_collected", "is_collected_marked_by", "is_collected_marked_when", "flagged", "flag_status_set_by", "flag_status_set_when", "flag_status_note", "last_updated_by", "date_updated", "created_by", "date_created"])
+    
+    for omj in OrthoModoJob.objects.all():
+        writer.writerow([omj.patient.name, omj.patient.code, omj.clinician.name, omj.scan_date, omj.scan_date_entered_by, omj.scan_date_entered_when, omj.orthotrac_reference_no, omj.orthotrac_analysis_done, omj.orthotrac_analysis_notes, omj.printer, omj.is_stl_file_prepared, omj.stl_marked_as_prepared_by, omj.stl_marked_as_prepared_when, omj.is_printed, omj.print_date, omj.is_printed_marked_by, omj.is_printed_marked_when, omj.orthomodel_type, omj.orthomodel_notes, omj.collection_type, omj.planned_collection_date, omj.planned_collection_time, omj.collection_notes, omj.is_collected, omj.is_collected_marked_by, omj.is_collected_marked_when, omj.flagged, omj.flag_status_set_by, omj.flag_status_set_when, omj.flag_status_note, omj.last_updated_by, omj.date_updated, omj.created_by, omj.date_created])
+   
+    return response
 
 #**************OrthoModoJob*****************
 class OrthoModoJobViewOpen(LoginRequiredMixin,generic.ListView):
@@ -171,8 +202,32 @@ class OrthoModoPatientJobCreate(LoginRequiredMixin,CreateView):
         orthomodojob = form.save(commit=False)
         orthomodojob.user = self.request.user
         selected_patient_id = form.data['selected_patient_id']
+        scan_date = form.data.get('scan_date',None)
+        is_stl_file_prepared = form.data.get('is_stl_file_prepared',None)
+        is_printed = form.data.get('is_printed',None)
+        is_collected = form.data.get('is_collected',None)
+        flagged = form.data.get('flagged',None)
+        
+        print('is_printed', file=sys.stderr)
+        print(is_printed, file=sys.stderr)
+        if (scan_date):
+            orthomodojob.scan_date_entered_by =  self.request.user
+            orthomodojob.scan_date_entered_when = timezone.now()
+        if (is_stl_file_prepared):
+            orthomodojob.stl_marked_as_prepared_by = self.request.user
+            orthomodojob.stl_marked_as_prepared_when = timezone.now()
+        if (is_printed):
+            orthomodojob.is_printed_marked_by = self.request.user
+            orthomodojob.is_printed_marked_when = timezone.now()
+        if (is_collected):
+            orthomodojob.is_collected_marked_by = self.request.user
+            orthomodojob.is_collected_marked_when = timezone.now()
+        if (flagged):
+            orthomodojob.flag_status_set_by = self.request.user
+            orthomodojob.flag_status_set_when = timezone.now()
         patient = get_object_or_404(Patient, id=selected_patient_id)
         orthomodojob.patient = patient
+        orthomodojob.created_by = self.request.user
         return super(OrthoModoPatientJobCreate, self).form_valid(form)
     def form_invalid(self, form):
         print('save new job INVALID', file=sys.stderr)
@@ -205,13 +260,41 @@ class OrthoModoJobUpdate(LoginRequiredMixin,UpdateView):
         context['printer_list'] =  Printer.objects.all()
         context['orthomodel_type_list'] =  OrthoModelType.objects.all()
         context['collection_type_list'] =  CollectionType.objects.all()
-        #print(context['patient_list'], file=sys.stderr)
-      
+        #print(context['patient_list'], file=sys.stderr)      
         return context
     def form_invalid(self, form):
         print('save new job INVALID', file=sys.stderr)
         print(form.errors, file=sys.stderr)
         return HttpResponse("form is invalid... " + str(form.errors))
+    def form_valid(self,form):
+        print('update job', file=sys.stderr)
+        orthomodojob_before_save = get_object_or_404(OrthoModoJob, id=self.kwargs['pk'])
+        orthomodojob = form.save(commit=False)
+        
+        is_stl_file_prepared = form.data.get('is_stl_file_prepared',None)
+            
+        print('existing scan_date', file=sys.stderr)
+        print(orthomodojob_before_save.scan_date, file=sys.stderr)
+        print('new value scan_date', file=sys.stderr)
+        print(orthomodojob.scan_date, file=sys.stderr)
+        #update the user info if the settings have been added
+        if (orthomodojob_before_save.scan_date == None and orthomodojob.scan_date != None):
+            orthomodojob.scan_date_entered_by =  self.request.user
+            orthomodojob.scan_date_entered_when = timezone.now()
+        if (orthomodojob_before_save.is_stl_file_prepared == False and orthomodojob.is_stl_file_prepared == True):
+            orthomodojob.stl_marked_as_prepared_by = self.request.user
+            orthomodojob.stl_marked_as_prepared_when = timezone.now()
+        if (orthomodojob_before_save.is_printed == False and orthomodojob.is_printed == True):
+            orthomodojob.is_printed_marked_by = self.request.user
+            orthomodojob.is_printed_marked_when = timezone.now()
+        if (orthomodojob_before_save.is_collected == False and orthomodojob.is_collected == True):
+            orthomodojob.is_collected_marked_by = self.request.user
+            orthomodojob.is_collected_marked_when = timezone.now()
+        if (orthomodojob_before_save.flagged == False and orthomodojob.flagged == True):
+            orthomodojob.flag_status_set_by = self.request.user
+            orthomodojob.flag_status_set_when = timezone.now()
+        orthomodojob.last_updated_by = self.request.user
+        return super(OrthoModoJobUpdate, self).form_valid(form)
 
 class OrthoModoJobDelete(LoginRequiredMixin,DeleteView):
     login_url = 'orthomodoweb:login'

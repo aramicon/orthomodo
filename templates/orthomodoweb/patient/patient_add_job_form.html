@@ -128,6 +128,9 @@
 					<label for="id_is_stl_file_prepared">IS AN STL FILE PREPARED?</label>
 					<input type="checkbox" name="is_stl_file_prepared" id="id_is_stl_file_prepared" {% if orthomodojob.is_stl_file_prepared %}checked{% endif %} >
 					<br />
+					<label for="id_is_printed">IS PRINTED?</label>
+					<input type="checkbox" name="is_printed" id="id_is_printed" {% if orthomodojob.is_printed %}checked{% endif %} >
+					<br />
 					<label for="id_print_date">PRINT DATE:</label>
 					<input type="text" name="print_date" id="id_print_date" maxlength="200" placeholder = "Print Date" value = '{{ orthomodojob.print_date|date:"Y-m-d" }}'>
 				</p>
