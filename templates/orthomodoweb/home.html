@@ -99,6 +99,7 @@ $( function() {
 					</table>	
 					
 				{% else %}
+					</table>	
 					<p class="emptylist">No OrthoModoJobs found for this scan date.</p>
 				{% endif %}
 			</div>
@@ -138,7 +139,7 @@ $( function() {
 							<th class="thickborderleft">Status</th>
 							<th >Notes</th>
 						</tr>
-					{% if selected_day_jobs_scandate %}
+					{% if selected_day_jobs_printdate %}
 					{% for orthomodojob in selected_day_jobs_printdate.all  %}
 						<tr>					
 						<td><a href="{% url 'orthomodoweb:orthomodojob-update' orthomodojob.id %}">OMJOB_{{ orthomodojob.id }}</a></td>
@@ -166,7 +167,8 @@ $( function() {
 					</table>	
 					
 				{% else %}
-					<p class="emptylist">No OrthoModoJobs found for this scan date.</p>
+					</table>	
+					<p class="emptylist">No OrthoModoJobs found for this print date.</p>
 				{% endif %}
 			</div>
 			
@@ -205,7 +207,7 @@ $( function() {
 							<th class="thickborderleft">Status</th>
 							<th >Notes</th>
 						</tr>
-					{% if selected_day_jobs_scandate %}
+					{% if selected_day_jobs_plannedcollectiondate %}
 					{% for orthomodojob in selected_day_jobs_plannedcollectiondate.all  %}
 						<tr>					
 						<td><a href="{% url 'orthomodoweb:orthomodojob-update' orthomodojob.id %}">OMJOB_{{ orthomodojob.id }}</a></td>
@@ -233,6 +235,7 @@ $( function() {
 					</table>	
 					
 				{% else %}
+					</table>
 					<p class="emptylist">No OrthoModoJobs found for this scan date.</p>
 				{% endif %}
 			</div>
@@ -272,7 +275,7 @@ $( function() {
 							<th class="thickborderleft">Status</th>
 							<th >Notes</th>
 						</tr>
-					{% if selected_day_jobs_scandate %}
+					{% if selected_day_jobs_dateupdated %}
 					{% for orthomodojob in selected_day_jobs_dateupdated.all  %}
 						<tr>					
 						<td><a href="{% url 'orthomodoweb:orthomodojob-update' orthomodojob.id %}">OMJOB_{{ orthomodojob.id }}</a></td>
@@ -300,6 +303,7 @@ $( function() {
 					</table>	
 					
 				{% else %}
+					</table>
 					<p class="emptylist">No OrthoModoJobs found for this scan date.</p>
 				{% endif %}
 			</div>

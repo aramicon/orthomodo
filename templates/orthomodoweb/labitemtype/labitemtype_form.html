@@ -1,0 +1,32 @@
+{% extends 'orthomodoweb/base.html' %}
+{% block content %}
+	
+	<div class="form_header">Lab Item Type: {{ labitemtype.name }}</div>
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	<div class = "formcontainer_f">	
+		<form action="" method="post">
+			{% csrf_token %}
+			
+			<label for="id_code">CODE*:</label>	
+			<br />
+			<input type="text" name="code" id="id_code" maxlength="200" placeholder = "Code" value = '{{ labitemtype.code }}'>
+			<br />
+			<label for="id_name">NAME*:</label>	
+			<br />
+			<input type="text" name="name" id="id_name" maxlength="200" placeholder = "Name" value = '{{ labitemtype.name }}'>
+			<br />
+			<label for="id_description">DESCRIPTION:</label>	
+			<br />
+			<textarea  rows="5" cols="120" name="description" id="id_description" placeholder = "Description">{{ labitemtype.description }}</textarea>
+			<br />			
+			<input class="button"type="submit" value="SAVE" />
+		 </form>		
+	</div>	
+
+
+	<div class="bottom_action_links">
+		<a class="button" href="{% url 'orthomodoweb:labitemtype-add' %}">Add NEW Lab Item Type</a>
+		<a class= "button_red" href="{% url 'orthomodoweb:labitemtype-delete' labitemtype.id%}">Delete this Lab Item Type</a>		
+	</div>
+
+{% endblock %}

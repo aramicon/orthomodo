@@ -7,6 +7,7 @@
 		$(document).ready(function() {
 			$('#id_scan_date').datepicker({ dateFormat: 'yy-mm-dd' });		
 			$('#id_print_date').datepicker({ dateFormat: 'yy-mm-dd' });
+			$('#id_poured_date').datepicker({ dateFormat: 'yy-mm-dd' });
 			$('#id_planned_collection_date').datepicker({ dateFormat: 'yy-mm-dd' });
 		});
 	</script>
@@ -31,14 +32,11 @@
 						hours1 = "23";
 						minutes1 = "59";
 					}
-
 					if (hours1.length == 1) hours1 = '0' + hours1;
 					if (minutes1.length == 1) minutes1 = '0' + minutes1;
 					if (minutes1 == 0) minutes1 = '00';
 
 					$('#id_planned_collection_time').val(hours1 + ':' + minutes1);
-					
-		   
 		  }
 		});
 		
@@ -57,8 +55,7 @@
 		}
 		if($("#collection_time_slider")){
 			$( "#collection_time_slider" ).slider('value',slider_time_total_minutes);
-		}
-		
+		}	
 		
 		  //accordian 
 		 $( "#orthomodojob_accordion" ).accordion({
@@ -70,9 +67,7 @@
 		  collapsible: true,
 		  active: false,
 		  heightStyle: "content"
-		});
-		
-		
+		});		
 		
 	  } );
 	  </script>
@@ -98,9 +93,7 @@
 							<option value="{{ md.id }}">{{ md.name }}</option>	
 						{% endifequal %}
 					{% endfor %}
-				</select>		
-			
-				
+				</select>	
 				
 				<label for="id_clinician">CLINICIAN:</label>				 
 				<select name="clinician" id = "id_clinician">				
@@ -114,17 +107,13 @@
 				</select>	
 
 				<label for="id_scan_date">SCAN DATE:</label>
-				<input type="text" name="scan_date" id="id_scan_date" maxlength="200" placeholder = "Scan Date" value = '{{ orthomodojob.scan_date|date:"Y-m-d" }}'>
-				
-			</div>
-				
+				<input type="text" name="scan_date" id="id_scan_date" maxlength="200" placeholder = "Scan Date" value = '{{ orthomodojob.scan_date|date:"Y-m-d" }}'>				
+			</div>				
 			
 		<div id="orthomodojob_accordion">
-			<h3>ORTHOTRAC INFO</h3>
+			<h3>ORTHOTRAC ANALYSIS</h3>
 			<div>
 				<p class = "header_group_2">
-					<label for="id_orthotrac_reference_no">ORTHOTRAC REFERENCE NO: </label>					
-					<input type="text" name="orthotrac_reference_no" id="id_orthotrac_reference_no" maxlength="200" placeholder = "Orthotrac Reference no" value = "{{ orthomodojob.orthotrac_reference_no }}">
 					<label for="id_orthotrac_analysis_done">IS ANALYSED?</label>
 					<input type="checkbox" name="orthotrac_analysis_done" id="id_orthotrac_analysis_done" {% if orthomodojob.orthotrac_analysis_done %}checked{% endif %} >
 					<br />
@@ -133,7 +122,7 @@
 					<textarea  rows="5" cols="120" name="orthotrac_analysis_notes" id="id_orthotrac_analysis_notes" placeholder = "Orthotrac Analysis Notes">{{ orthomodojob.orthotrac_analysis_notes }}</textarea>
 				</p>
 			</div>
-			<h3>PRINTING</h3>
+			<h3>3D PRINTED MODEL</h3>
 			<div>
 				<p class = "header_group_3">
 					<label for="id_printer">PRINTER:</label>					 
@@ -155,29 +144,58 @@
 					<input type="checkbox" name="is_printed" id="id_is_printed" {% if orthomodojob.is_printed %}checked{% endif %} >
 					<br />
 					<label for="id_print_date">PRINT DATE:</label>
-					<input type="text" name="print_date" id="id_print_date" maxlength="200" placeholder = "Print Date" value = '{{ orthomodojob.print_date|date:"Y-m-d" }}'>
+					<input type="text" name="print_date" id="id_print_date" maxlength="100" placeholder = "Print Date" value = '{{ orthomodojob.print_date|date:"Y-m-d" }}'>
 				</p>
 			</div>
-			<h3>MODEL DETAILS</h3>
+			<h3>PLASTER MODEL</h3>
+			<div>
+				<p class = "header_group_2">
+					<label for="id_is_poured">PLASTER MODEL IS POURED?</label>
+					<input type="checkbox" name="is_poured" id="id_is_poured" {% if orthomodojob.is_poured %}checked{% endif %} >
+					<br />
+					<label for="id_pour_date">POURED DATE:</label>
+					<input type="text" name="poured_date" id="id_poured_date" maxlength="100" placeholder = "Poured Date" value = '{{ orthomodojob.poured_date|date:"Y-m-d" }}'>
+				</p>
+			</div>
+			<h3>LAB ITEMS: RETAINERS & GUM SHIELDS</h3>
 			  <div>
 				<p class = "header_group_4">
-					<label for="id_orthomodel_type">MODEL TYPE:</label>				 
-					<select name="orthomodel_type" id = "id_orthomodel_type">	
-						<option value="" selected="">---------</option>
-						{% for omt in orthomodel_type_list %}
-							{% ifequal orthomodojob.orthomodel_type.id omt.id %}
-								<option value="{{ omt.id }}" selected="selected">{{ omt.name }}</option>
-							{% else %}
-								<option value="{{ omt.id }}">{{ omt.name }}</option>	
-							{% endifequal %}
-						{% endfor %}
-					</select>
-					<br />
-					<label for="id_orthomodel_notes">ORTHO MODEL NOTES (NEEDED FOR):</label>
-					<br />
-					<textarea  rows="5" cols="120" name="orthomodel_notes" id="id_orthomodel_notes" placeholder = "OrthoModel (Needed For) Notes">{{ orthomodojob.orthomodel_notes }}</textarea>
+				<table style="background-color:#ffffff">
+				<tr>
+					<th>ID</th>
+					<th>SHORTCODE</th>
+					<th>TYPE</th>
+					<th>MATERIAL</th>
+					<th>BLOCKED</th>
+					<th>MADE?</th>
+					<th>DATE MADE</th>
+					<th>NOTES</th>
+				</tr>
+				{% for lab_item in orthomodojob.labitem_set.all  %}
+					<tr>
+						<td><a href="{% url 'orthomodoweb:labitem-update' orthomodojob_id=orthomodojob.id pk=lab_item.id%}">LAB ITEM {{ lab_item.id }}</a></td>
+						<td>
+							<span style="font-family: 'Lucida Console', Monaco, monospace;">
+							{{lab_item.lab_item_type.code}}
+							<span style="color: #f5f2f2;background-color: #000000;">{{lab_item.lab_item_material.code}}</span>
+							{{lab_item.is_blocked|yesno:"B,U"}}
+							<span style="color:#ec3c3c">{{lab_item.is_made|yesno:"M,U"}}</span>
+							{{lab_item.made_date|date:"m-d"}}
+							</span>
+						</td>
+						<td>{{ lab_item.lab_item_type.name }}</td>
+						<td>{{ lab_item.lab_item_material.name }}</td>
+						<td>{{ lab_item.is_blocked|yesno:"Yes,No"  }}</td>
+						<td>{{ lab_item.is_made|yesno:"Yes,No"  }}</td>
+						<td>{{ lab_item.made_date|date:"Y-m-d" }}</td>
+						<td>{{ lab_item.notes }}</td>
+					</tr>	
+				{% endfor %}	
+
+				</table>
 			
-				</p>		
+				</p>
+				<a class= "button" href="{% url 'orthomodoweb:labitem-create' orthomodojob_id=orthomodojob.id %}">ADD LAB ITEM</a>				
 				
 			  </div>
 			  <h3>COLLECTION</h3>
@@ -208,8 +226,7 @@
 						<textarea  rows="5" cols="120" name="collection_notes" id="id_collection_notes" placeholder = "Collection Notes">{{ orthomodojob.collection_notes }}</textarea>		
 					</p>
 				</div>			
-		 </div>
-			
+		 </div>			
 			<div class="form_section">
 			<p class="status{% if orthomodojob.flagged %}_flagged{% endif %}">
 				<label for="id_flagged">IS FLAGGED?</label>	
@@ -217,8 +234,7 @@
 				<br />
 				<label for="id_flag_status_note">FLAG NOTES</label>				
 				<br />
-				<textarea  rows="5" cols="120" name="flag_status_note" id="id_flag_status_note" placeholder = "Flag Notes">{{ orthomodojob.flag_status_note }}</textarea>
-			
+				<textarea  rows="5" cols="120" name="flag_status_note" id="id_flag_status_note" placeholder = "Flag Notes">{{ orthomodojob.flag_status_note }}</textarea>			
 			</p>
 			<input type=hidden name="selected_patient_id" value="{{ selected_patient.id }}">
 			<input class="button" type="submit" value=" SAVE " />
@@ -232,6 +248,7 @@
 					<li>Scan Date set by {{ orthomodojob.scan_date_entered_by }}, {{ orthomodojob.scan_date_entered_when|date:'Y-m-d (H:i)' }}</li>
 					<li>STL file marked as printed by {{ orthomodojob.stl_marked_as_prepared_by }}, {{ orthomodojob.stl_marked_as_prepared_when|date:'Y-m-d (H:i)' }}</li>
 					<li>Is Printed marked by {{ orthomodojob.is_printed_marked_by }}, {{ orthomodojob.is_printed_marked_when|date:'Y-m-d (H:i)' }}</li>
+					<li>Is Poured marked by {{ orthomodojob.is_poured_marked_by }}, {{ orthomodojob.is_poured_marked_when|date:'Y-m-d (H:i)' }}</li>
 					<li>Is Collected marked by {{ orthomodojob.is_collected_marked_by }}, {{ orthomodojob.is_collected_marked_when|date:'Y-m-d (H:i)' }}</li>
 					<li>Is Flagged marked by {{ orthomodojob.flag_status_set_by }}, {{ orthomodojob.flag_status_set_when|date:'Y-m-d (H:i)' }}</li>
 				</ul>

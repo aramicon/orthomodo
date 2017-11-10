@@ -25,9 +25,9 @@ import operator
 import csv
 
 
-from .models import Printer, Patient, Clinician, ModelType, OrthoModelType, CollectionType, OrthoModoJob
+from .models import Printer, Patient, Clinician, ModelType, LabItemType, CollectionType, OrthoModoJob, LabItem, LabItemMaterial
 
-from orthomodoweb.forms import PrinterForm, PatientForm, ClinicianForm,OrthoModelTypeForm, CollectionTypeForm, OrthoModoJobForm
+from orthomodoweb.forms import PrinterForm, PatientForm, ClinicianForm,LabItemTypeForm, CollectionTypeForm, OrthoModoJobForm, LabItemForm
 
 
 #***************HOME PAGE***********
@@ -70,10 +70,10 @@ def export_as_csv(request):
     response['Content-Disposition'] = 'attachment; filename="orthomodo_export.csv"'
 
     writer = csv.writer(response,delimiter=',', quoting=csv.QUOTE_ALL, quotechar='"')
-    writer.writerow(["patient.name", "patient.code", "clinician.name", "scan_date", "scan_date_entered_by", "scan_date_entered_when", "orthotrac_reference_no", "orthotrac_analysis_done", "orthotrac_analysis_notes", "printer", "is_stl_file_prepared", "stl_marked_as_prepared_by", "stl_marked_as_prepared_when", "is_printed", "print_date", "is_printed_marked_by", "is_printed_marked_when", "orthomodel_type", "orthomodel_notes", "collection_type", "planned_collection_date", "planned_collection_time", "collection_notes", "is_collected", "is_collected_marked_by", "is_collected_marked_when", "flagged", "flag_status_set_by", "flag_status_set_when", "flag_status_note", "last_updated_by", "date_updated", "created_by", "date_created"])
+    writer.writerow(["patient.name", "patient.code", "clinician.name", "scan_date", "scan_date_entered_by", "scan_date_entered_when", "orthotrac_analysis_done", "orthotrac_analysis_notes", "printer", "is_stl_file_prepared", "stl_marked_as_prepared_by", "stl_marked_as_prepared_when", "is_printed", "print_date", "is_printed_marked_by", "is_printed_marked_when", "collection_type", "planned_collection_date", "planned_collection_time", "collection_notes", "is_collected", "is_collected_marked_by", "is_collected_marked_when", "flagged", "flag_status_set_by", "flag_status_set_when", "flag_status_note", "last_updated_by", "date_updated", "created_by", "date_created"])
     
     for omj in OrthoModoJob.objects.all():
-        writer.writerow([omj.patient.name, omj.patient.code, omj.clinician.name, omj.scan_date, omj.scan_date_entered_by, omj.scan_date_entered_when, omj.orthotrac_reference_no, omj.orthotrac_analysis_done, omj.orthotrac_analysis_notes, omj.printer, omj.is_stl_file_prepared, omj.stl_marked_as_prepared_by, omj.stl_marked_as_prepared_when, omj.is_printed, omj.print_date, omj.is_printed_marked_by, omj.is_printed_marked_when, omj.orthomodel_type, omj.orthomodel_notes, omj.collection_type, omj.planned_collection_date, omj.planned_collection_time, omj.collection_notes, omj.is_collected, omj.is_collected_marked_by, omj.is_collected_marked_when, omj.flagged, omj.flag_status_set_by, omj.flag_status_set_when, omj.flag_status_note, omj.last_updated_by, omj.date_updated, omj.created_by, omj.date_created])
+        writer.writerow([omj.patient.name, omj.patient.code, omj.clinician.name, omj.scan_date, omj.scan_date_entered_by, omj.scan_date_entered_when, omj.orthotrac_analysis_done, omj.orthotrac_analysis_notes, omj.printer, omj.is_stl_file_prepared, omj.stl_marked_as_prepared_by, omj.stl_marked_as_prepared_when, omj.is_printed, omj.print_date, omj.is_printed_marked_by, omj.is_printed_marked_when, omj.collection_type, omj.planned_collection_date, omj.planned_collection_time, omj.collection_notes, omj.is_collected, omj.is_collected_marked_by, omj.is_collected_marked_when, omj.flagged, omj.flag_status_set_by, omj.flag_status_set_when, omj.flag_status_note, omj.last_updated_by, omj.date_updated, omj.created_by, omj.date_created])
    
     return response
 
@@ -87,17 +87,29 @@ class OrthoModoJobViewOpen(LoginRequiredMixin,generic.ListView):
         context=super(OrthoModoJobViewOpen,self).get_context_data(**kwargs)
         context['total_open_jobs'] =  OrthoModoJob.objects.filter(Q(flagged=True) | Q(is_collected=False)).count() 
         query = self.request.GET.get('q')
+        is_flagged_filter = self.request.GET.get('is_flagged')
+        is_analysed_filter = self.request.GET.get('is_analysed')
+        is_printed_filter = self.request.GET.get('is_printed')
         if query:
             query_list = query.split()
             print('Searching for ', file=sys.stderr)
             print('-'.join(query_list), file=sys.stderr)
             context['search_applied'] = '-'.join(query_list)
+        if is_flagged_filter=='on':
+            context['is_flagged_filter'] = '1'
+        if is_analysed_filter=='on':
+            context['is_analysed_filter'] = '1'
+        if is_printed_filter=='on':
+            context['is_printed_filter'] = '1'
         return context
     def get_queryset(self):
         """Return open OrthoModoJobs for the logged-in user."""
         print('Open jobs list', file=sys.stderr)
-        result = OrthoModoJob.objects.filter(Q(flagged=True) | Q(is_collected=False)).order_by('-scan_date') 
+        result = OrthoModoJob.objects.filter(Q(flagged=True) | Q(is_collected=False)).order_by('-id') 
         query = self.request.GET.get('q')
+        is_flagged_filter = self.request.GET.get('is_flagged')
+        is_analysed_filter = self.request.GET.get('is_analysed')
+        is_printed_filter = self.request.GET.get('is_printed')
         if query:
             query_list = query.split()
             result = result.filter(
@@ -112,11 +124,7 @@ class OrthoModoJobViewOpen(LoginRequiredMixin,generic.ListView):
                 reduce(operator.and_,
                        (Q(printer__name__icontains=q) for q in query_list)) |
                 reduce(operator.and_,
-                       (Q(print_date__icontains=q) for q in query_list)) |
-                reduce(operator.and_,
-                       (Q(orthomodel_type__name__icontains=q) for q in query_list)) |
-                reduce(operator.and_,
-                       (Q(orthomodel_notes__icontains=q) for q in query_list)) |
+                       (Q(print_date__icontains=q) for q in query_list)) |              
                 reduce(operator.and_,
                        (Q(collection_type__name__icontains=q) for q in query_list)) |
                 reduce(operator.and_,
@@ -126,6 +134,12 @@ class OrthoModoJobViewOpen(LoginRequiredMixin,generic.ListView):
                 reduce(operator.and_,
                        (Q(flag_status_note__icontains=q) for q in query_list))
             )
+        if is_flagged_filter=="on":
+            result=result.filter(flagged=True)
+        if is_analysed_filter=="on":
+            result=result.filter(orthotrac_analysis_done=True)
+        if is_printed_filter=="on":
+            result=result.filter(is_printed=True)
         return result
         
 class OrthoModoJobViewAll(LoginRequiredMixin,generic.ListView):
@@ -137,16 +151,28 @@ class OrthoModoJobViewAll(LoginRequiredMixin,generic.ListView):
         context=super(OrthoModoJobViewAll,self).get_context_data(**kwargs)
         context['total_all_jobs'] =  OrthoModoJob.objects.filter().count() 
         query = self.request.GET.get('q')
+        is_flagged_filter = self.request.GET.get('is_flagged')
+        is_analysed_filter = self.request.GET.get('is_analysed')
+        is_printed_filter = self.request.GET.get('is_printed')
         if query:
             query_list = query.split()
             print('Searching for ', file=sys.stderr)
             print('-'.join(query_list), file=sys.stderr)
             context['search_applied'] = '-'.join(query_list)
+        if is_flagged_filter=='on':
+            context['is_flagged_filter'] = '1'
+        if is_analysed_filter=='on':
+            context['is_analysed_filter'] = '1'
+        if is_printed_filter=='on':
+            context['is_printed_filter'] = '1'
         return context
     def get_queryset(self):
         """Return all OrthoModoJobs."""
-        result = OrthoModoJob.objects.filter().order_by('-scan_date') 
+        result = OrthoModoJob.objects.filter().order_by('-id') 
         query = self.request.GET.get('q')
+        is_flagged_filter = self.request.GET.get('is_flagged')
+        is_analysed_filter = self.request.GET.get('is_analysed')
+        is_printed_filter = self.request.GET.get('is_printed')
         if query:
             query_list = query.split()
             result = result.filter(
@@ -161,11 +187,7 @@ class OrthoModoJobViewAll(LoginRequiredMixin,generic.ListView):
                 reduce(operator.and_,
                        (Q(printer__name__icontains=q) for q in query_list)) |
                 reduce(operator.and_,
-                       (Q(print_date__icontains=q) for q in query_list)) |
-                reduce(operator.and_,
-                       (Q(orthomodel_type__name__icontains=q) for q in query_list)) |
-                reduce(operator.and_,
-                       (Q(orthomodel_notes__icontains=q) for q in query_list)) |
+                       (Q(print_date__icontains=q) for q in query_list)) |              
                 reduce(operator.and_,
                        (Q(collection_type__name__icontains=q) for q in query_list)) |
                 reduce(operator.and_,
@@ -175,6 +197,12 @@ class OrthoModoJobViewAll(LoginRequiredMixin,generic.ListView):
                 reduce(operator.and_,
                        (Q(flag_status_note__icontains=q) for q in query_list))
             )
+        if is_flagged_filter=="on":
+            result=result.filter(flagged=True)
+        if is_analysed_filter=="on":
+            result=result.filter(orthotrac_analysis_done=True)
+        if is_printed_filter=="on":
+            result=result.filter(is_printed=True)
         return result
 
 class OrthoModoJobCreate(LoginRequiredMixin,CreateView):
@@ -183,7 +211,7 @@ class OrthoModoJobCreate(LoginRequiredMixin,CreateView):
     model = OrthoModoJob
     form = OrthoModoJobForm
     template_name = 'orthomodoweb/orthomodojob/orthomodojob_add_form.html'
-    fields=['patient','clinician','scan_date','orthotrac_reference_no','orthotrac_analysis_done','orthotrac_analysis_notes','printer','is_stl_file_prepared','is_printed','print_date','orthomodel_type','orthomodel_notes','collection_type','planned_collection_date','planned_collection_time','collection_notes','is_collected','flagged','flag_status_note']   
+    fields=['patient','clinician','scan_date','orthotrac_analysis_done','orthotrac_analysis_notes','printer','is_stl_file_prepared','is_printed','print_date','collection_type','planned_collection_date','planned_collection_time','collection_notes','is_collected','flagged','flag_status_note']   
     def form_valid(self, form):
         orthomodojob = form.save(commit=False)
         orthomodojob.user = self.request.user
@@ -195,7 +223,7 @@ class OrthoModoPatientJobCreate(LoginRequiredMixin,CreateView):
     model = OrthoModoJob
     form = OrthoModoJobForm
     template_name = 'orthomodoweb/patient/patient_add_job_form.html'
-    fields=['clinician','scan_date','orthotrac_reference_no','model_type','orthotrac_analysis_done','orthotrac_analysis_notes','printer','is_stl_file_prepared','is_printed','print_date','orthomodel_type','orthomodel_notes','collection_type','planned_collection_date','planned_collection_time','collection_notes','is_collected','flagged','flag_status_note']   
+    fields=['clinician','scan_date','model_type','orthotrac_analysis_done','orthotrac_analysis_notes','printer','is_stl_file_prepared','is_printed','print_date','is_poured','poured_date','collection_type','planned_collection_date','planned_collection_time','collection_notes','is_collected','flagged','flag_status_note']   
     def form_valid(self, form):
         print('save new job', file=sys.stderr)
         print(form.data['selected_patient_id'], file=sys.stderr)
@@ -205,6 +233,7 @@ class OrthoModoPatientJobCreate(LoginRequiredMixin,CreateView):
         scan_date = form.data.get('scan_date',None)
         is_stl_file_prepared = form.data.get('is_stl_file_prepared',None)
         is_printed = form.data.get('is_printed',None)
+        is_poured = form.data.get('is_poured',None)
         is_collected = form.data.get('is_collected',None)
         flagged = form.data.get('flagged',None)
         
@@ -219,6 +248,9 @@ class OrthoModoPatientJobCreate(LoginRequiredMixin,CreateView):
         if (is_printed):
             orthomodojob.is_printed_marked_by = self.request.user
             orthomodojob.is_printed_marked_when = timezone.now()
+        if (is_poured):
+            orthomodojob.is_poured_marked_by = self.request.user
+            orthomodojob.is_poured_marked_when = timezone.now()
         if (is_collected):
             orthomodojob.is_collected_marked_by = self.request.user
             orthomodojob.is_collected_marked_when = timezone.now()
@@ -238,8 +270,7 @@ class OrthoModoPatientJobCreate(LoginRequiredMixin,CreateView):
         context['selected_patient'] = get_object_or_404(Patient, id=self.kwargs['patient_id'])
         print(context['selected_patient'], file=sys.stderr)
         context['clinician_list'] =  Clinician.objects.all()
-        context['printer_list'] =  Printer.objects.all()
-        context['orthomodel_type_list'] =  OrthoModelType.objects.all()
+        context['printer_list'] =  Printer.objects.all()     
         context['model_type_list'] = ModelType.objects.all().order_by('id') 
         context['collection_type_list'] =  CollectionType.objects.all()
         return context
@@ -250,7 +281,7 @@ class OrthoModoJobUpdate(LoginRequiredMixin,UpdateView):
     model = OrthoModoJob
     form = OrthoModoJobForm
     template_name = 'orthomodoweb/orthomodojob/orthomodojob_form.html'
-    fields=['patient','clinician','scan_date','orthotrac_reference_no','model_type','orthotrac_analysis_done','orthotrac_analysis_notes','printer','is_stl_file_prepared','is_printed','print_date','orthomodel_type','orthomodel_notes','collection_type','planned_collection_date','planned_collection_time','collection_notes','is_collected','flagged','flag_status_note']   
+    fields=['patient','clinician','scan_date','model_type','orthotrac_analysis_done','orthotrac_analysis_notes','printer','is_stl_file_prepared','is_printed','print_date','is_poured','poured_date','collection_type','planned_collection_date','planned_collection_time','collection_notes','is_collected','flagged','flag_status_note']   
     def get_queryset(self):
         base_qs = super(OrthoModoJobUpdate, self).get_queryset()
         return base_qs.filter()
@@ -258,8 +289,7 @@ class OrthoModoJobUpdate(LoginRequiredMixin,UpdateView):
         context=super(OrthoModoJobUpdate,self).get_context_data(**kwargs)
         context['patient_list'] =  Patient.objects.all()
         context['clinician_list'] =  Clinician.objects.all()
-        context['printer_list'] =  Printer.objects.all()
-        context['orthomodel_type_list'] =  OrthoModelType.objects.all()
+        context['printer_list'] =  Printer.objects.all()      
         context['collection_type_list'] =  CollectionType.objects.all()
         context['model_type_list'] = ModelType.objects.all().order_by('id') 
         #print(context['patient_list'], file=sys.stderr)      
@@ -275,10 +305,10 @@ class OrthoModoJobUpdate(LoginRequiredMixin,UpdateView):
         
         is_stl_file_prepared = form.data.get('is_stl_file_prepared',None)
             
-        print('existing scan_date', file=sys.stderr)
-        print(orthomodojob_before_save.scan_date, file=sys.stderr)
-        print('new value scan_date', file=sys.stderr)
-        print(orthomodojob.scan_date, file=sys.stderr)
+        #print('existing scan_date', file=sys.stderr)
+        #print(orthomodojob_before_save.scan_date, file=sys.stderr)
+        #print('new value scan_date', file=sys.stderr)
+        #print(orthomodojob.scan_date, file=sys.stderr)
         #update the user info if the settings have been added
         if (orthomodojob_before_save.scan_date == None and orthomodojob.scan_date != None):
             orthomodojob.scan_date_entered_by =  self.request.user
@@ -289,6 +319,9 @@ class OrthoModoJobUpdate(LoginRequiredMixin,UpdateView):
         if (orthomodojob_before_save.is_printed == False and orthomodojob.is_printed == True):
             orthomodojob.is_printed_marked_by = self.request.user
             orthomodojob.is_printed_marked_when = timezone.now()
+        if (orthomodojob_before_save.is_poured == False and orthomodojob.is_poured == True):
+            orthomodojob.is_poured_marked_by = self.request.user
+            orthomodojob.is_poured_marked_when = timezone.now()
         if (orthomodojob_before_save.is_collected == False and orthomodojob.is_collected == True):
             orthomodojob.is_collected_marked_by = self.request.user
             orthomodojob.is_collected_marked_when = timezone.now()
@@ -490,57 +523,145 @@ class ClinicianDelete(LoginRequiredMixin,DeleteView):
         base_qs = super(ClinicianDelete, self).get_queryset()
         return base_qs.filter()
         
-#**************OrthoModelType*****************
-class OrthoModelTypeView(LoginRequiredMixin,generic.ListView):
+#**************LabItemType*****************
+class LabItemTypeView(LoginRequiredMixin,generic.ListView):
     login_url = 'orthomodoweb:login'
     redirect_field_name = 'orthomodoweb:home'
-    model = OrthoModelType
-    template_name = 'orthomodoweb/orthomodeltype/orthomodeltype_list.html'
+    model = LabItemType
+    template_name = 'orthomodoweb/labitemtype/labitemtype_list.html'
     def get_queryset(self):
-        """Return OrthoModelTypes for the logged-in user."""
-        return OrthoModelType.objects.filter().order_by('name')  
+        """Return LabItemTypes for the logged-in user."""
+        return LabItemType.objects.filter().order_by('name')  
     def get_context_data(self, **kwargs):
-        context=super(OrthoModelTypeView,self).get_context_data(**kwargs)
-        context['total_orthomodeltypes'] =  OrthoModelType.objects.filter().count() 
+        context=super(LabItemTypeView,self).get_context_data(**kwargs)
+        context['total_labitemtypes'] =  LabItemType.objects.filter().count() 
         return context
 
-class OrthoModelTypeCreate(LoginRequiredMixin,CreateView):
+class LabItemTypeCreate(LoginRequiredMixin,CreateView):
     login_url = 'orthomodoweb:login'
     redirect_field_name = 'orthomodoweb:home'
-    model = OrthoModelType
-    form = OrthoModelTypeForm
-    template_name = 'orthomodoweb/orthomodeltype/orthomodeltype_add_form.html'
+    model = LabItemType
+    form = LabItemTypeForm
+    template_name = 'orthomodoweb/labitemtype/labitemtype_add_form.html'
     fields=['code','name','description']   
     def form_valid(self, form):
-        orthomodeltype = form.save(commit=False)
-        orthomodeltype.user = self.request.user
-        return super(OrthoModelTypeCreate, self).form_valid(form)
+        labitemtype = form.save(commit=False)
+        labitemtype.user = self.request.user
+        return super(LabItemTypeCreate, self).form_valid(form)
     def form_invalid(self, form):
         return HttpResponse("form is invalid... " + str(form.errors))
 
-class OrthoModelTypeUpdate(LoginRequiredMixin,UpdateView):
+class LabItemTypeUpdate(LoginRequiredMixin,UpdateView):
     login_url = 'orthomodoweb:login'
     redirect_field_name = 'orthomodoweb:home'
-    model = OrthoModelType
-    form = OrthoModelTypeForm
-    template_name = 'orthomodoweb/orthomodeltype/orthomodeltype_form.html'
+    model = LabItemType
+    form = LabItemTypeForm
+    template_name = 'orthomodoweb/labitemtype/labitemtype_form.html'
     fields=['code','name','description']   
     def get_queryset(self):
-        base_qs = super(OrthoModelTypeUpdate, self).get_queryset()
+        base_qs = super(LabItemTypeUpdate, self).get_queryset()
         return base_qs.filter()
     def form_invalid(self, form):
         return HttpResponse("form is invalid... " + str(form.errors))
 
-class OrthoModelTypeDelete(LoginRequiredMixin,DeleteView):
+class LabItemTypeDelete(LoginRequiredMixin,DeleteView):
     login_url = 'orthomodoweb:login'
     redirect_field_name = 'orthomodoweb:home'
-    model = OrthoModelType
-    template_name = 'orthomodoweb/orthomodeltype/orthomodeltype_confirm_delete.html'
-    success_url = reverse_lazy('orthomodoweb:orthomodeltype-list')
+    model = LabItemType
+    template_name = 'orthomodoweb/labitemtype/labitemtype_confirm_delete.html'
+    success_url = reverse_lazy('orthomodoweb:labitemtype-list')
     def get_queryset(self):
-        base_qs = super(OrthoModelTypeDelete, self).get_queryset()
+        base_qs = super(LabItemTypeDelete, self).get_queryset()
         return base_qs.filter()
-    
+  
+#**************LAB ITEM*****************
+class LabItemCreate(LoginRequiredMixin,CreateView):
+    login_url = 'orthomodoweb:login'
+    redirect_field_name = 'orthomodoweb:home'
+    model = LabItem
+    form = LabItemForm
+    template_name = 'orthomodoweb/labitem/labitem_add_form.html'
+    fields=['lab_item_type','lab_item_material','is_blocked','is_made','made_date','notes']   
+                    
+    def form_valid(self, form):
+        labitem = form.save(commit=False)  
+        orthomodojob_id = form.data['orthomodojob_id']
+        orthomodojob = get_object_or_404(OrthoModoJob, id=orthomodojob_id)        
+        labitem.orthomodojob = orthomodojob
+        return super(LabItemCreate, self).form_valid(form)
+    def form_invalid(self, form):
+        return HttpResponse("form is invalid... " + str(form.errors))
+    def get_context_data(self, **kwargs):
+        context=super(LabItemCreate,self).get_context_data(**kwargs)
+        context['lab_item_type_list'] = LabItemType.objects.all().order_by('id')         
+        context['lab_item_material_list'] = LabItemMaterial.objects.all().order_by('id') 
+        context['j_id'] = self.kwargs['orthomodojob_id']
+        return context
+
+class LabItemUpdate(LoginRequiredMixin,UpdateView):
+    login_url = 'orthomodoweb:login'
+    redirect_field_name = 'orthomodoweb:home'
+    model = LabItem
+    form = LabItemForm
+    template_name = 'orthomodoweb/labitem/labitem_form.html'
+    fields=['lab_item_type','lab_item_material','is_blocked','is_made','made_date','notes']    
+    def get_context_data(self, **kwargs):
+        context=super(LabItemUpdate,self).get_context_data(**kwargs)       
+        context['lab_item_type_list'] = LabItemType.objects.all().order_by('id')         
+        context['lab_item_material_list'] = LabItemMaterial.objects.all().order_by('id')         
+        return context
+    def get_queryset(self):
+        base_qs = super(LabItemUpdate, self).get_queryset()
+        return base_qs.filter()
+    def form_invalid(self, form):
+        return HttpResponse("form is invalid... " + str(form.errors))
+
+class LabItemView(LoginRequiredMixin,generic.ListView):
+    login_url = 'orthomodoweb:login'
+    redirect_field_name = 'orthomodoweb:home'
+    model = LabItem
+    template_name = 'orthomodoweb/labitem/labitem_list.html'
+    def get_context_data(self, **kwargs):
+        context=super(LabItemView,self).get_context_data(**kwargs)
+        context['total_all_labitems'] =  LabItem.objects.filter().count() 
+        query = self.request.GET.get('q')
+        hide_made_items_filter = self.request.GET.get('hide_made_items')
+        blocked_only_items_filter = self.request.GET.get('blocked_only_items')
+        if query:
+            query_list = query.split()
+            #print('Searching for ', file=sys.stderr)
+            #print('-'.join(query_list), file=sys.stderr)
+            context['search_applied'] = '-'.join(query_list)
+        if hide_made_items_filter=='on':
+            context['hide_made_items_filter'] = '1'
+        if blocked_only_items_filter=='on':
+            context['blocked_only_items_filter'] = '1'
+        return context
+    def get_queryset(self):
+        """Return open Patients (can include search terms)"""
+        result = LabItem.objects.filter().order_by('-id') 
+        query = self.request.GET.get('q')
+        hide_made_items_filter = self.request.GET.get('hide_made_items')
+        blocked_only_items_filter = self.request.GET.get('blocked_only_items')
+        if query:
+            query_list = query.split()
+            result = result.filter(
+                reduce(operator.and_,
+                       (Q(made_date__icontains=q) for q in query_list)) |
+                reduce(operator.and_,
+                       (Q(notes__icontains=q) for q in query_list)) |
+                reduce(operator.and_,
+                       (Q(orthomodojob__patient__name__icontains=q) for q in query_list)) |
+                reduce(operator.and_,
+                       (Q(lab_item_type__name__icontains=q) for q in query_list)) |    
+                reduce(operator.and_,
+                       (Q(lab_item_material__name__icontains=q) for q in query_list))              
+            )
+        if hide_made_items_filter:           
+            result = result.filter(is_made=False)          
+        if blocked_only_items_filter=='on':
+            result = result.filter(is_blocked=True)
+        return result
         
 #**************COLLECTION TYPE*****************
 class CollectionTypeView(LoginRequiredMixin,generic.ListView):

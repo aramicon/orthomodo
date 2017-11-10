@@ -1,0 +1,76 @@
+{% extends 'orthomodoweb/base.html' %}
+{% block content %}
+<script>
+		$(document).ready(function() {
+			$('#id_made_date').datepicker({ dateFormat: 'yy-mm-dd' });		
+		});
+	</script>	
+		
+	<div class="form_header">Lab Item (Retainer Or Gumshield) {{ labitem.id }}</div>
+	
+	
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	<div class = "formcontainer_f">	
+		<form action="" method="post">
+			{% csrf_token %}
+			
+			<h4><a href="{% url 'orthomodoweb:orthomodojob-update' labitem.orthomodojob.id %}">OMJOB_{{labitem.orthomodojob.id}}</a></h4>
+			
+			<h3>
+				<span style="font-family: 'Lucida Console', Monaco, monospace;">
+					{{labitem.lab_item_type.code}}
+					<span style="color: #f5f2f2;background-color: #000000;">{{labitem.lab_item_material.code}}</span>
+					{{labitem.is_blocked|yesno:"B,U"}}
+					<span style="color:#ec3c3c">{{labitem.is_made|yesno:"M,U"}}</span>
+					{{labitem.made_date|date:"m-d"}}
+				</span>
+			</h3>
+			
+			<label for="id_lab_item_type">LAB ITEM TYPE:</label>				 
+				<select name="lab_item_type" id = "id_lab_item_type">				
+					{% for lit in lab_item_type_list %}
+						{% ifequal labitem.lab_item_type.id lit.id %}
+							<option value="{{ lit.id }}" selected="selected">{{ lit.name }} {{ lit.code }}</option>
+						{% else %}
+							<option value="{{ lit.id }}">{{ lit.name }} {{ lit.code }}</option>	
+						{% endifequal %}
+					{% endfor %}
+				</select>	
+			<br /><br />	
+			<label for="id_lab_item_material">LAB ITEM MATERIAL:</label>				 
+				<select name="lab_item_material" id = "id_lab_item_material">				
+					{% for lim in lab_item_material_list %}
+						{% ifequal labitem.lab_item_material.id lim.id %}
+							<option value="{{ lim.id }}" selected="selected">{{ lim.name }} {{ lim.code }}</option>
+						{% else %}
+							<option value="{{ lim.id }}">{{ lim.name }} {{ lim.code }}</option>	
+						{% endifequal %}
+					{% endfor %}
+				</select>	
+			
+			<br /><br />
+			<label for="id_is_blocked">NEEDS TO BE BLOCKED?</label>
+			<input type="checkbox" name="is_blocked" id="id_is_blocked" {% if labitem.is_blocked %}checked{% endif %} >
+			
+			<div class="form_highlight_box_1">
+			<label for="id_is_made">IS MADE/POURED?</label>
+			<input type="checkbox" name="is_made" id="id_is_made" {% if labitem.is_made %}checked{% endif %} >
+			<br /><br />
+			<label for="id_made_date">DATE MADE/POURED:</label>
+			<input type="text" name="made_date" id="id_made_date" maxlength="100" placeholder = "Date Made/Poured" value = '{{ labitem.made_date|date:"Y-m-d" }}'>
+			</div>
+			
+			<br />
+			
+			<label for="id_notes">LAB ITEM NOTES:</label>						
+			<br />
+			<textarea  rows="5" cols="120" name="notes" id="id_notes" placeholder = "Lab Item Notes">{{ labitem.notes }}</textarea>
+						
+			<input type=hidden name="orthomodojob_id" value="{{ j_id }}">
+			<br /><br />
+			<input class="button"type="submit" value="SAVE" />
+		 </form>
+		
+	</div>	
+	 
+{% endblock %}

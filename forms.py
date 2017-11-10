@@ -18,7 +18,7 @@ class ClinicianForm(forms.ModelForm):
     code = forms.CharField(label='Printer Code', max_length=10,widget=forms.TextInput(attrs={'class': "input-lg"}))    
     description = forms.CharField(label='Printer Description')
     
-class OrthoModelTypeForm(forms.ModelForm):
+class LabItemTypeForm(forms.ModelForm):
     name = forms.CharField(label='Printer Name', max_length=200,widget=forms.TextInput(attrs={'class': "input-lg"}))
     code = forms.CharField(label='Printer Code', max_length=10,widget=forms.TextInput(attrs={'class': "input-lg"}))    
     description = forms.CharField(label='Printer Description')
@@ -30,4 +30,8 @@ class CollectionTypeForm(forms.ModelForm):
     
 class OrthoModoJobForm(forms.ModelForm):
     orthotrac_analysis_notes = forms.CharField(label='Orthotrac ANalysis Notes')
+    
+class LabItemForm(forms.ModelForm):
+    is_blocked = forms.CharField(label='Printer Name', max_length=200,widget=forms.TextInput(attrs={'class': "input-lg"}))
+
     

@@ -5,6 +5,7 @@
 		$(document).ready(function() {
 			$('#id_scan_date').datepicker({ dateFormat: 'yy-mm-dd' });		
 			$('#id_print_date').datepicker({ dateFormat: 'yy-mm-dd' });
+			$('#id_poured_date').datepicker({ dateFormat: 'yy-mm-dd' });
 			$('#id_planned_collection_date').datepicker({ dateFormat: 'yy-mm-dd' });
 		});
 	</script>
@@ -111,11 +112,9 @@
 				
 			
 		<div id="orthomodojob_accordion">
-			<h3>ORTHOTRAC INFO</h3>
+			<h3>ORTHOTRAC ANALYSIS</h3>
 			<div>
 				<p class = "header_group_2">
-					<label for="id_orthotrac_reference_no">ORTHOTRAC REFERENCE NO: </label>					
-					<input type="text" name="orthotrac_reference_no" id="id_orthotrac_reference_no" maxlength="200" placeholder = "Orthotrac Reference no" value = "{{ orthomodojob.orthotrac_reference_no }}">
 					<label for="id_orthotrac_analysis_done">IS ANALYSED?</label>
 					<input type="checkbox" name="orthotrac_analysis_done" id="id_orthotrac_analysis_done" {% if orthomodojob.orthotrac_analysis_done %}checked{% endif %} >
 					<br />
@@ -124,7 +123,7 @@
 					<textarea  rows="5" cols="120" name="orthotrac_analysis_notes" id="id_orthotrac_analysis_notes" placeholder = "Orthotrac Analysis Notes">{{ orthomodojob.orthotrac_analysis_notes }}</textarea>
 				</p>
 			</div>
-			<h3>PRINTING</h3>
+			<h3>3D PRINTED MODEL</h3>
 			<div>
 				<p class = "header_group_3">
 					<label for="id_printer">PRINTER:</label>					 
@@ -147,6 +146,16 @@
 					<br />
 					<label for="id_print_date">PRINT DATE:</label>
 					<input type="text" name="print_date" id="id_print_date" maxlength="200" placeholder = "Print Date" value = '{{ orthomodojob.print_date|date:"Y-m-d" }}'>
+				</p>
+			</div>
+			<h3>PLASTER MODEL</h3>
+			<div>
+				<p class = "header_group_2">
+					<label for="id_is_poured">PLASTER MODEL IS POURED?</label>
+					<input type="checkbox" name="is_poured" id="id_is_poured" {% if orthomodojob.is_poured %}checked{% endif %} >
+					<br />
+					<label for="id_pour_date">POURED DATE:</label>
+					<input type="text" name="poured_date" id="id_poured_date" maxlength="100" placeholder = "Poured Date" value = '{{ orthomodojob.poured_date|date:"Y-m-d" }}'>
 				</p>
 			</div>
 			<h3>MODEL DETAILS</h3>

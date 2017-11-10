@@ -1,0 +1,74 @@
+{% extends 'orthomodoweb/base.html' %}
+{% block content %}
+	<div class="standard_page_container">
+		<div class="standard_page_container_header">lab Items: {{ total_all_labitems }}</div>
+		
+		{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+		
+		<form id="searchform" action="" method="get" accept-charset="utf-8">
+			<input class="searchfield" id="searchbox" name="q" type="text" placeholder="Search" value="{% if search_applied %}{{ search_applied }}{% endif %}"/>
+			<button class="searchbutton" type="submit">
+				<i class="search-button-text">Search</i>
+			</button>
+			<label for="id_hide_made_items">HIDE MADE ITEMS</label><input type="checkbox" name="hide_made_items" id="id_hide_made_items" {% if hide_made_items_filter %} checked {% endif %}>
+			&nbsp;<label for="id_blocked_only_items">BLOCKED ONLY</label><input type="checkbox" name="blocked_only_items" id="id_blocked_only_items" {% if blocked_only_items_filter %} checked {% endif %}>
+		</form>
+		{% if search_applied %}<div class="search_applied"> SEARCH APPLIED <span class='search_text'>{{ search_applied }}</span> (<a href="{% url 'orthomodoweb:labitem-list' %}">CLEAR</a>)</div>{% endif %}	  
+		
+		{% if object_list  %}			
+			<table style="background-color:#ffffff">
+				<tr>
+					<th colspan= "4" class="header_group_2">JOB</th>
+					
+					<th colspan = "8" class="thickborderleft header_group_4">LAB ITEM</th>
+					
+				</tr>
+				<tr>
+					<th>JOB ID</th>
+					<th>TYPE</th>
+					<th>PATIENT NAME</th>
+					<th>IS COLLECTED?</th>
+					<th class="thickborderleft">ID</th>
+					<th>SHORTCODE</th>
+					<th>TYPE</th>
+					<th>MATERIAL</th>
+					<th>BLOCKED</th>
+					<th>MADE?</th>
+					<th>DATE MADE</th>
+					<th>NOTES</th>
+				</tr>
+				{% for lab_item in object_list  %}
+					<tr>
+						<td><a href="{% url 'orthomodoweb:orthomodojob-update' lab_item.orthomodojob.id %}">OMJOB_{{ lab_item.orthomodojob.id }}</a></td>
+						<td>{{ lab_item.orthomodojob.model_type.name }}</td>
+						<td><a href="{% url 'orthomodoweb:patient-update' lab_item.orthomodojob.patient.id %}">{{ lab_item.orthomodojob.patient.name }}</a></td>
+						<td>{{ lab_item.orthomodojob.is_collected|yesno:"Yes,No" }}</td>
+						<td class="thickborderleft"><a href="{% url 'orthomodoweb:labitem-update' orthomodojob_id=lab_item.orthomodojob.id pk=lab_item.id%}">LAB ITEM {{ lab_item.id }}</a></td>
+						<td>
+							<span style="font-family: 'Lucida Console', Monaco, monospace;">
+							{{lab_item.lab_item_type.code}}
+							<span style="color: #f5f2f2;background-color: #000000;">{{lab_item.lab_item_material.code}}</span>
+							{{lab_item.is_blocked|yesno:"B,U"}}
+							<span style="color:#ec3c3c">{{lab_item.is_made|yesno:"M,U"}}</span>
+							{{lab_item.made_date|date:"m-d"}}
+							</span>
+						</td>
+						<td>{{ lab_item.lab_item_type.name }}</td>
+						<td>{{ lab_item.lab_item_material.name }}</td>
+						<td>{{ lab_item.is_blocked|yesno:"Yes,No"  }}</td>
+						<td>{{ lab_item.is_made|yesno:"Yes,No"  }}</td>
+						<td>{{ lab_item.made_date|date:"Y-m-d" }}</td>
+						<td>{{ lab_item.notes }}</td>
+					</tr>	
+				{% endfor %}	
+
+				</table>
+				
+			
+		{% else %}
+			<p>No Lab items found.</p>
+		{% endif %}
+		
+	</div>
+
+{% endblock %}

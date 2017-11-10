@@ -1,7 +1,7 @@
 {% extends 'orthomodoweb/base.html' %}
 {% block content %}
 	<div class="standard_page_container">
-		<div class="standard_page_container_header">Ortho Model Types: {{ total_orthomodeltypes }}</div>
+		<div class="standard_page_container_header">Lab Item Types: {{ total_labitemtypes }}</div>
 	
 		{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 		
@@ -13,22 +13,22 @@
 					<th class="header_group_2">Name</th>								
 					<th class="header_group_2">Description</th>
 				</tr>				
-			{% for orthomodeltype in object_list  %}
+			{% for labitemtype in object_list  %}
 				<tr>				
-					<td><a href="{% url 'orthomodoweb:orthomodeltype-update' orthomodeltype.id %}">orthomodeltype {{ orthomodeltype.id }}</a> </td>
-					<td>{{ orthomodeltype.code }}</td>		
-					<td>{{ orthomodeltype.name }}</td>
-					<td>{{ orthomodeltype.description }}</td>
+					<td><a href="{% url 'orthomodoweb:labitemtype-update' labitemtype.id %}">labitemtype {{ labitemtype.id }}</a> </td>
+					<td>{{ labitemtype.code }}</td>		
+					<td>{{ labitemtype.name }}</td>
+					<td>{{ labitemtype.description }}</td>
 					</li>
 				</tr>
 			{% endfor %}
 				
 			</table>
 		{% else %}
-			<p>No orthomodeltypes found.</p>
+			<p>No labitemtypes found.</p>
 		{% endif %}
 		 <p>
-		 <a class = "button" href="{% url 'orthomodoweb:orthomodeltype-add' %}">Add Orthomodel Type</a>
+		 <a class = "button" href="{% url 'orthomodoweb:labitemtype-add' %}">Add Lab Item Type</a>
 		</p>
 	</div>
 

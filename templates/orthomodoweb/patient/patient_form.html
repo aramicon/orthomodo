@@ -86,7 +86,7 @@
 				<th >Notes</th>
 			</tr>
 		{% if patient.orthomodojob_set %}
-		{% for orthomodojob in patient.orthomodojob_set.all  %}
+		{% for orthomodojob in patient.orthomodojob_set.all|dictsortreversed:"id"  %}
 			<tr>
 		
 			<td><a href="{% url 'orthomodoweb:orthomodojob-update' orthomodojob.id %}">OMJOB_{{ orthomodojob.id }}</a></td>
@@ -114,6 +114,7 @@
 		</table>	
 		
 	{% else %}
+		</table>
 		<p class="emptylist">No OrthoModoJobs found for this patient.</p>
 	{% endif %}
 	</div>

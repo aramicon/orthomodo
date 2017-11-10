@@ -1,0 +1,65 @@
+{% extends 'orthomodoweb/base.html' %}
+{% block content %}
+<script>
+		$(document).ready(function() {
+			$('#id_made_date').datepicker({ dateFormat: 'yy-mm-dd' });		
+		});
+	</script>	
+		
+	<div class="form_header">ADD New Lab Item (Retainer Or Gumshield) to an Ortho Job</div>
+	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+	<div class = "formcontainer_f">	
+		<form action="" method="post">
+			{% csrf_token %}
+			
+			<label for="id_lab_item_type">LAB ITEM TYPE:</label>				 
+				<select name="lab_item_type" id = "id_lab_item_type">				
+					{% for lit in lab_item_type_list %}
+						{% ifequal labitem.lab_item_type.id lit.id %}
+							<option value="{{ lit.id }}" selected="selected">{{ lit.name }} {{ lit.code }}</option>
+						{% else %}
+							<option value="{{ lit.id }}">{{ lit.name }} {{ lit.code }}</option>	
+						{% endifequal %}
+					{% endfor %}
+				</select>	
+			<br /><br />	
+			<label for="id_lab_item_material">LAB ITEM MATERIAL:</label>				 
+				<select name="lab_item_material" id = "id_lab_item_material">				
+					{% for lim in lab_item_material_list %}
+						{% ifequal labitem.lab_item_material.id lim.id %}
+							<option value="{{ lim.id }}" selected="selected">{{ lim.name }} {{ lim.code }}</option>
+						{% else %}
+							<option value="{{ lim.id }}">{{ lim.name }} {{ lim.code }}</option>	
+						{% endifequal %}
+					{% endfor %}
+				</select>	
+			
+			<br /><br />
+			<label for="id_is_blocked">NEEDS TO BE BLOCKED?</label>
+			<input type="checkbox" name="is_blocked" id="id_is_blocked" {% if labitem.is_blocked %}checked{% endif %} >
+			
+			<div class="form_highlight_box_1">
+			<label for="id_is_made">IS MADE/POURED?</label>
+			<input type="checkbox" name="is_made" id="id_is_made" {% if labitem.is_made %}checked{% endif %} >
+			<br /><br />
+			<label for="id_made_date">DATE MADE/POURED:</label>
+			<input type="text" name="made_date" id="id_made_date" maxlength="100" placeholder = "Date Made/Poured" value = '{{ labitem.made_date|date:"Y-m-d" }}'>
+			</div>
+			
+			<br />
+			
+			<label for="id_notes">LAB ITEM NOTES:</label>						
+			<br />
+			<textarea  rows="5" cols="120" name="notes" id="id_notes" placeholder = "Lab Item Notes">{{ labitem.notes }}</textarea>
+						
+			
+			<br /><br />
+			<input class="button"type="submit" value="SAVE" />
+			
+			<input type=hidden name="orthomodojob_id" value="{{ j_id }}">			
+			
+		 </form>
+		
+	</div>	
+	 
+{% endblock %}

@@ -2,9 +2,11 @@
 {% block content %}
 	<div class="standard_page_container">
 		<div class="standard_page_container_header">Patients: {{ total_all_patients }}</div>
-	
+		
 		{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-		<form id="searchform" action="" method="get" accept-charset="utf-8">      
+		
+		<form id="searchform" action="" method="get" accept-charset="utf-8">
+			<a class = "button" href="{% url 'orthomodoweb:patient-add' %}">Add New Patient</a>
 			<input class="searchfield" id="searchbox" name="q" type="text" placeholder="Search" value="{% if search_applied %}{{ search_applied }}{% endif %}"/>
 			<button class="searchbutton" type="submit">
 				<i class="search-button-text">Search</i>
@@ -46,9 +48,7 @@
 		{% else %}
 			<p>No Patients found.</p>
 		{% endif %}
-		 <p>
-		 <a class = "button" href="{% url 'orthomodoweb:patient-add' %}">Add Patient</a>
-		</p>
+		
 	</div>
 
 {% endblock %}

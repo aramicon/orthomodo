@@ -431,3 +431,21 @@ input[type=checkbox] {
 .frontpage{
 	padding:20px;
 }
+
+.compact_table_cell{
+	font-size:0.7em;
+	/* font-family: monospace; */
+	font-family: "Lucida Console", Monaco, monospace;
+}
+
+.compact_table_cell_normal_font{
+	font-size:0.7em;
+	padding:2px;
+}
+.form_highlight_box_1{
+	border: 1px solid #888080;
+    background-color: #f4fafd;
+    padding: 10px;
+    margin: 20px 0px 10px 0px;
+    width: 50%;
+}

@@ -9,9 +9,9 @@ app_name='orthomodoweb'
 urlpatterns = [
     #home page
     url(r'^home/$',views.HomeView.as_view(),name='home'),
-	
-	#export
-	url(r'^export_as_csv/$',views.export_as_csv,name='export_as_csv'),
+    
+    #export
+    url(r'^export_as_csv/$',views.export_as_csv,name='export_as_csv'),
     
     #orthomodojob
     url(r'^orthomodojob/open/$', views.OrthoModoJobViewOpen.as_view(), name='orthomodojob-open-list'),
@@ -45,15 +45,20 @@ urlpatterns = [
     url(r'^clinician/(?P<pk>[0-9]+)/$', views.ClinicianUpdate.as_view(), name='clinician-update'),
     url(r'^clinician/(?P<pk>[0-9]+)/delete$', views.ClinicianDelete.as_view(), name='clinician-delete'),
     
-    #orthomodeltypes
-    url(r'^orthomodeltype/$', views.OrthoModelTypeView.as_view(), name='orthomodeltype-list'),
-    url(r'^orthomodeltype/add/$', views.OrthoModelTypeCreate.as_view(), name='orthomodeltype-add'),
-    url(r'^orthomodeltype/(?P<pk>[0-9]+)/$', views.OrthoModelTypeUpdate.as_view(), name='orthomodeltype-update'),
-    url(r'^orthomodeltype/(?P<pk>[0-9]+)/delete$', views.OrthoModelTypeDelete.as_view(), name='orthomodeltype-delete'),
+    #labitemtypes
+    url(r'^labitemtype/$', views.LabItemTypeView.as_view(), name='labitemtype-list'),
+    url(r'^labitemtype/add/$', views.LabItemTypeCreate.as_view(), name='labitemtype-add'),
+    url(r'^labitemtype/(?P<pk>[0-9]+)/$', views.LabItemTypeUpdate.as_view(), name='labitemtype-update'),
+    url(r'^labitemtype/(?P<pk>[0-9]+)/delete$', views.LabItemTypeDelete.as_view(), name='labitemtype-delete'),
     
      #collectiontype
     url(r'^collectiontype/$', views.CollectionTypeView.as_view(), name='collectiontype-list'),
     url(r'^collectiontype/add/$', views.CollectionTypeCreate.as_view(), name='collectiontype-add'),
     url(r'^collectiontype/(?P<pk>[0-9]+)/$', views.CollectionTypeUpdate.as_view(), name='collectiontype-update'),
     url(r'^collectiontype/(?P<pk>[0-9]+)/delete$', views.CollectionTypeDelete.as_view(), name='collectiontype-delete'),
+	
+	#labitems
+	 url(r'^(?P<orthomodojob_id>[0-9]+)/labitem/add/$', views.LabItemCreate.as_view(), name='labitem-create'),
+	 url(r'^(?P<orthomodojob_id>[0-9]+)/labitem/(?P<pk>[0-9]+)/$', views.LabItemUpdate.as_view(), name='labitem-update'),
+	 url(r'^orthomodojob/labitem/$', views.LabItemView.as_view(), name='labitem-list'),
 ]

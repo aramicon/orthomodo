@@ -1,22 +1,22 @@
 {% extends 'orthomodoweb/base.html' %}
 {% block content %}
 	
-	<div class="form_header">ADD NEW Ortho Model Type</div>
+	<div class="form_header">ADD NEW Lab Item Type</div>
 	{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 	<div class = "formcontainer_f">	
 		<form action="" method="post">
 			{% csrf_token %}			
 			<label for="id_code">CODE*:</label>	
 			<br />
-			<input type="text" name="code" id="id_code" maxlength="200" placeholder = "Code" value = '{{ orthomodeltype.code }}'>
+			<input type="text" name="code" id="id_code" maxlength="200" placeholder = "Code" value = '{{ labitemtype.code }}'>
 			<br />
 			<label for="id_name">NAME*:</label>	
 			<br />
-			<input type="text" name="name" id="id_name" maxlength="200" placeholder = "Name" value = '{{ orthomodeltype.name }}'>
+			<input type="text" name="name" id="id_name" maxlength="200" placeholder = "Name" value = '{{ labitemtype.name }}'>
 			<br />
 			<label for="id_description">DESCRIPTION:</label>	
 			<br />
-			<textarea  rows="5" cols="120" name="description" id="id_description" placeholder = "Description">{{ orthomodeltype.description }}</textarea>
+			<textarea  rows="5" cols="120" name="description" id="id_description" placeholder = "Description">{{ labitemtype.description }}</textarea>
 			<br />			
 			<input class="button"type="submit" value="SAVE" />
 		 </form>
