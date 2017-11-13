@@ -41,7 +41,7 @@
 					<tr>
 						<td><a href="{% url 'orthomodoweb:orthomodojob-update' lab_item.orthomodojob.id %}">OMJOB_{{ lab_item.orthomodojob.id }}</a></td>
 						<td>{{ lab_item.orthomodojob.model_type.name }}</td>
-						<td><a href="{% url 'orthomodoweb:patient-update' lab_item.orthomodojob.patient.id %}">{{ lab_item.orthomodojob.patient.name }}</a></td>
+						<td><a href="{% url 'orthomodoweb:patient-update' lab_item.orthomodojob.patient.id %}">{{ lab_item.orthomodojob.patient.code }}: {{ lab_item.orthomodojob.patient.name }}</a></td>
 						<td>{{ lab_item.orthomodojob.is_collected|yesno:"Yes,No" }}</td>
 						<td class="thickborderleft"><a href="{% url 'orthomodoweb:labitem-update' orthomodojob_id=lab_item.orthomodojob.id pk=lab_item.id%}">LAB ITEM {{ lab_item.id }}</a></td>
 						<td>

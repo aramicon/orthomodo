@@ -104,10 +104,21 @@
 							<option value="{{ c.id }}">{{ c.name }}</option>	
 						{% endifequal %}
 					{% endfor %}
-				</select>	
+				</select>				
 
 				<label for="id_scan_date">SCAN DATE:</label>
-				<input type="text" name="scan_date" id="id_scan_date" maxlength="200" placeholder = "Scan Date" value = '{{ orthomodojob.scan_date|date:"Y-m-d" }}'>				
+				<input type="text" name="scan_date" id="id_scan_date" maxlength="200" placeholder = "Scan Date" value = '{{ orthomodojob.scan_date|date:"Y-m-d" }}'>
+
+				<label for="id_created_model_use">CREATED MODEL USE:</label>				 
+				<select name="created_model_use" id = "id_created_model_use">				
+					{% for cmu in created_model_use_list %}
+						{% ifequal orthomodojob.created_model_use.id cmu.id %}
+							<option value="{{ cmu.id }}" selected="selected">{{ cmu.name }}</option>
+						{% else %}
+							<option value="{{ cmu.id }}">{{ cmu.name }}</option>	
+						{% endifequal %}
+					{% endfor %}
+				</select>	
 			</div>				
 			
 		<div id="orthomodojob_accordion">

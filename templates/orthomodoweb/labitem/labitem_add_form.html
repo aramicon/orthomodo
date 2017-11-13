@@ -39,11 +39,11 @@
 			<input type="checkbox" name="is_blocked" id="id_is_blocked" {% if labitem.is_blocked %}checked{% endif %} >
 			
 			<div class="form_highlight_box_1">
-			<label for="id_is_made">IS MADE/POURED?</label>
+			<label for="id_is_made">IS MADE?</label>
 			<input type="checkbox" name="is_made" id="id_is_made" {% if labitem.is_made %}checked{% endif %} >
 			<br /><br />
-			<label for="id_made_date">DATE MADE/POURED:</label>
-			<input type="text" name="made_date" id="id_made_date" maxlength="100" placeholder = "Date Made/Poured" value = '{{ labitem.made_date|date:"Y-m-d" }}'>
+			<label for="id_made_date">DATE MADE:</label>
+			<input type="text" name="made_date" id="id_made_date" maxlength="100" placeholder = "Date Made" value = '{{ labitem.made_date|date:"Y-m-d" }}'>
 			</div>
 			
 			<br />

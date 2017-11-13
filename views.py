@@ -25,7 +25,7 @@ import operator
 import csv
 
 
-from .models import Printer, Patient, Clinician, ModelType, LabItemType, CollectionType, OrthoModoJob, LabItem, LabItemMaterial
+from .models import Printer, Patient, Clinician, ModelType, LabItemType, CollectionType, OrthoModoJob, LabItem, LabItemMaterial, CreatedModelUse
 
 from orthomodoweb.forms import PrinterForm, PatientForm, ClinicianForm,LabItemTypeForm, CollectionTypeForm, OrthoModoJobForm, LabItemForm
 
@@ -116,6 +116,8 @@ class OrthoModoJobViewOpen(LoginRequiredMixin,generic.ListView):
                 reduce(operator.and_,
                        (Q(patient__name__icontains=q) for q in query_list)) |
                 reduce(operator.and_,
+                       (Q(patient__code__icontains=q) for q in query_list)) |
+                reduce(operator.and_,
                        (Q(clinician__name__icontains=q) for q in query_list)) |
                 reduce(operator.and_,
                        (Q(scan_date__icontains=q) for q in query_list)) |
@@ -179,6 +181,8 @@ class OrthoModoJobViewAll(LoginRequiredMixin,generic.ListView):
                 reduce(operator.and_,
                        (Q(patient__name__icontains=q) for q in query_list)) |
                 reduce(operator.and_,
+                       (Q(patient__code__icontains=q) for q in query_list)) |
+                reduce(operator.and_,
                        (Q(clinician__name__icontains=q) for q in query_list)) |
                 reduce(operator.and_,
                        (Q(scan_date__icontains=q) for q in query_list)) |
@@ -223,7 +227,7 @@ class OrthoModoPatientJobCreate(LoginRequiredMixin,CreateView):
     model = OrthoModoJob
     form = OrthoModoJobForm
     template_name = 'orthomodoweb/patient/patient_add_job_form.html'
-    fields=['clinician','scan_date','model_type','orthotrac_analysis_done','orthotrac_analysis_notes','printer','is_stl_file_prepared','is_printed','print_date','is_poured','poured_date','collection_type','planned_collection_date','planned_collection_time','collection_notes','is_collected','flagged','flag_status_note']   
+    fields=['clinician','scan_date','model_type','orthotrac_analysis_done','orthotrac_analysis_notes','printer','is_stl_file_prepared','is_printed','print_date','is_poured','poured_date','collection_type','planned_collection_date','planned_collection_time','collection_notes','is_collected','flagged','flag_status_note','created_model_use']   
     def form_valid(self, form):
         print('save new job', file=sys.stderr)
         print(form.data['selected_patient_id'], file=sys.stderr)
@@ -273,6 +277,7 @@ class OrthoModoPatientJobCreate(LoginRequiredMixin,CreateView):
         context['printer_list'] =  Printer.objects.all()     
         context['model_type_list'] = ModelType.objects.all().order_by('id') 
         context['collection_type_list'] =  CollectionType.objects.all()
+        context['created_model_use_list'] =  CreatedModelUse.objects.all()
         return context
 
 class OrthoModoJobUpdate(LoginRequiredMixin,UpdateView):
@@ -281,7 +286,7 @@ class OrthoModoJobUpdate(LoginRequiredMixin,UpdateView):
     model = OrthoModoJob
     form = OrthoModoJobForm
     template_name = 'orthomodoweb/orthomodojob/orthomodojob_form.html'
-    fields=['patient','clinician','scan_date','model_type','orthotrac_analysis_done','orthotrac_analysis_notes','printer','is_stl_file_prepared','is_printed','print_date','is_poured','poured_date','collection_type','planned_collection_date','planned_collection_time','collection_notes','is_collected','flagged','flag_status_note']   
+    fields=['patient','clinician','scan_date','model_type','orthotrac_analysis_done','orthotrac_analysis_notes','printer','is_stl_file_prepared','is_printed','print_date','is_poured','poured_date','collection_type','planned_collection_date','planned_collection_time','collection_notes','is_collected','flagged','flag_status_note','created_model_use']   
     def get_queryset(self):
         base_qs = super(OrthoModoJobUpdate, self).get_queryset()
         return base_qs.filter()
@@ -291,7 +296,8 @@ class OrthoModoJobUpdate(LoginRequiredMixin,UpdateView):
         context['clinician_list'] =  Clinician.objects.all()
         context['printer_list'] =  Printer.objects.all()      
         context['collection_type_list'] =  CollectionType.objects.all()
-        context['model_type_list'] = ModelType.objects.all().order_by('id') 
+        context['model_type_list'] = ModelType.objects.all().order_by('id')
+        context['created_model_use_list'] =  CreatedModelUse.objects.all()
         #print(context['patient_list'], file=sys.stderr)      
         return context
     def form_invalid(self, form):
@@ -652,6 +658,8 @@ class LabItemView(LoginRequiredMixin,generic.ListView):
                        (Q(notes__icontains=q) for q in query_list)) |
                 reduce(operator.and_,
                        (Q(orthomodojob__patient__name__icontains=q) for q in query_list)) |
+                reduce(operator.and_,
+                       (Q(orthomodojob__patient__code__icontains=q) for q in query_list)) |
                 reduce(operator.and_,
                        (Q(lab_item_type__name__icontains=q) for q in query_list)) |    
                 reduce(operator.and_,

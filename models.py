@@ -79,6 +79,12 @@ class ModelType(models.Model):
     name = models.CharField(max_length=30, unique=True)
     def __str__(self):
         return self.name
+        
+class CreatedModelUse(models.Model):     
+    code = models.CharField(max_length=20, unique=True)
+    name = models.CharField(max_length=100)
+    def __str__(self):
+        return self.name
  
 class OrthoModoJob(models.Model):      
     patient = models.ForeignKey(Patient, on_delete=models.PROTECT)
@@ -100,7 +106,8 @@ class OrthoModoJob(models.Model):
     is_poured =  models.BooleanField(default=False)
     poured_date = models.DateField(blank=True, null=True)   
     is_poured_marked_by = models.ForeignKey(settings.AUTH_USER_MODEL,blank=True,null=True,related_name="orthomodojob_is_poured_marked_by")
-    is_poured_marked_when = models.DateTimeField(blank=True, null=True)     
+    is_poured_marked_when = models.DateTimeField(blank=True, null=True) 
+    created_model_use = models.ForeignKey(CreatedModelUse, on_delete=models.PROTECT,blank=True,null=True)    
     collection_type = models.ForeignKey(CollectionType, on_delete=models.PROTECT,blank=True,null=True)
     planned_collection_date = models.DateField(blank=True, null=True)    
     planned_collection_time = models.TimeField(blank=True, null=True)
