@@ -16,33 +16,33 @@
 			{% csrf_token %}
 			<div class="column form_left_container">
 			
-				<label for="id_code">CODE: </label>
+				<i class="fa fa-address-card-o" aria-hidden="true"></i>  <label for="id_code">CODE: </label>
 				<input type="text" name="code" id="id_code" maxlength="200" placeholder = "Code (unique)" value = '{{ patient.code }}'>
 				<br /><br />
-				<label for="id_name">NAME:</label>
+				<i class="fa fa-user-circle" aria-hidden="true"></i> <label for="id_name">NAME:</label>
 				<input type="text" name="name" id="id_name" maxlength="200" placeholder = "Name" value = "{{ patient.name }}">
 				<br /><br />
-				<label for="id_reference_no">REFERENCE NUMBER:</label>				 
+				<i class="fa fa-share-square" aria-hidden="true"></i> <label for="id_reference_no">REFERENCE NUMBER:</label>				 
 				<input type="text" name="reference_no" id="id_reference_no" maxlength="200" placeholder = "Reference No" value = '{{ patient.reference_no }}'>
 				<br /><br />
-				<label for="id_email">EMAIL:</label>
+				<i class="fa fa-envelope-o" aria-hidden="true"></i> <label for="id_email">EMAIL:</label>
 				<input type="text" name="email" id="id_email" maxlength="200" placeholder = "email" value = '{{ patient.email }}'>
 				<br /><br />
-				<label for="id_phone_no_1">PHONE NO. 1:</label>
+				<i class="fa fa-phone" aria-hidden="true"></i> <label for="id_phone_no_1">PHONE NO. 1:</label>
 				<input type="text" name="phone_no_1" id="id_phone_no_1" maxlength="200" placeholder = "phone no 1" value = '{{ patient.phone_no_1 }}'>
 				<br /><br />
-				<label for="id_phone_no_2">PHONE NO. 2:</label>
+				<i class="fa fa-mobile" aria-hidden="true"></i> <label for="id_phone_no_2">PHONE NO. 2:</label>
 				<input type="text" name="phone_no_2" id="id_phone_no_2" maxlength="200" placeholder = "phone no 2" value = '{{ patient.phone_no_2 }}'>
 				<br /><br />
 			</div>
 			<div class="column form_right_container">
-				<label for="id_dob">DATE OF BIRTH:</label>
+				<i class="fa fa-calendar" aria-hidden="true"></i> <label for="id_dob">DATE OF BIRTH:</label>
 				<input type="text" name="dob" id="id_dob" maxlength="200" placeholder = "" value = '{{ patient.dob|date:"Y-m-d" }}'>
 				<br /><br />
-				<label for="id_address">ADDRESS:</label>
+				<i class="fa fa-map-marker" aria-hidden="true"></i> <label for="id_address">ADDRESS:</label>
 				<input type="text" name="address" id="id_address" maxlength="300" placeholder = "address" value = '{{ patient.address }}'>
 				<br /><br />
-				<label for="id_description">DESCRIPTION/NOTES:</label>				
+				<i class="fa fa-sticky-note-o" aria-hidden="true"></i> <label for="id_description">DESCRIPTION/NOTES:</label>				
 				<br />
 				<textarea  rows="8" cols="82" name="description" id="id_description" placeholder = "description/notes">{{ patient.description }}</textarea>		
 				<br /><br />

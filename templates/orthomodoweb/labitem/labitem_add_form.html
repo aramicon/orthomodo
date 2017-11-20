@@ -12,7 +12,7 @@
 		<form action="" method="post">
 			{% csrf_token %}
 			
-			<label for="id_lab_item_type">LAB ITEM TYPE:</label>				 
+			<i class="fa fa-magnet" aria-hidden="true"></i> <label for="id_lab_item_type">LAB ITEM TYPE:</label>				 
 				<select name="lab_item_type" id = "id_lab_item_type">				
 					{% for lit in lab_item_type_list %}
 						{% ifequal labitem.lab_item_type.id lit.id %}
@@ -23,7 +23,7 @@
 					{% endfor %}
 				</select>	
 			<br /><br />	
-			<label for="id_lab_item_material">LAB ITEM MATERIAL:</label>				 
+			<i class="fa fa-lemon-o" aria-hidden="true"></i> <label for="id_lab_item_material">LAB ITEM MATERIAL:</label>				 
 				<select name="lab_item_material" id = "id_lab_item_material">				
 					{% for lim in lab_item_material_list %}
 						{% ifequal labitem.lab_item_material.id lim.id %}
@@ -35,20 +35,20 @@
 				</select>	
 			
 			<br /><br />
-			<label for="id_is_blocked">NEEDS TO BE BLOCKED?</label>
+			<i class="fa fa-square-o" aria-hidden="true"></i> <label for="id_is_blocked">NEEDS TO BE BLOCKED?</label>
 			<input type="checkbox" name="is_blocked" id="id_is_blocked" {% if labitem.is_blocked %}checked{% endif %} >
 			
 			<div class="form_highlight_box_1">
-			<label for="id_is_made">IS MADE?</label>
+			<i class="fa fa-square-o" aria-hidden="true"></i> <label for="id_is_made">IS MADE?</label>
 			<input type="checkbox" name="is_made" id="id_is_made" {% if labitem.is_made %}checked{% endif %} >
 			<br /><br />
-			<label for="id_made_date">DATE MADE:</label>
+			<i class="fa fa-calendar" aria-hidden="true"></i> <label for="id_made_date">DATE MADE:</label>
 			<input type="text" name="made_date" id="id_made_date" maxlength="100" placeholder = "Date Made" value = '{{ labitem.made_date|date:"Y-m-d" }}'>
 			</div>
 			
 			<br />
 			
-			<label for="id_notes">LAB ITEM NOTES:</label>						
+			<i class="fa fa-sticky-note-o" aria-hidden="true"></i> <label for="id_notes">LAB ITEM NOTES:</label>						
 			<br />
 			<textarea  rows="5" cols="120" name="notes" id="id_notes" placeholder = "Lab Item Notes">{{ labitem.notes }}</textarea>
 						
