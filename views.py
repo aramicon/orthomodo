@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.base import TemplateView
-from django.views.generic import DetailView
+from django.views.generic import DetailView, FormView
 from django.utils import timezone
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -14,53 +14,90 @@ from django.contrib.auth import login, authenticate
 import math
 import sys
 from datetime import datetime, timedelta, time
+from django.contrib.auth.models import User
+from django import forms
 
 from django.db import connections
 from django.db.models import Count, Min, Sum, Avg, F, Q
 from django.http import JsonResponse
 
+from django.core.mail import send_mail
+
 from functools import reduce
 import operator
+
+from django.conf import settings
 
 import csv
 
 
 from .models import Printer, Patient, Clinician, ModelType, LabItemType, CollectionType, OrthoModoJob, LabItem, LabItemMaterial, CreatedModelUse
 
-from orthomodoweb.forms import PrinterForm, PatientForm, ClinicianForm,LabItemTypeForm, CollectionTypeForm, OrthoModoJobForm, LabItemForm
+from orthomodoweb.forms import UserCreationForm, PrinterForm, PatientForm, ClinicianForm,LabItemTypeForm, CollectionTypeForm, OrthoModoJobForm, LabItemForm
 
+from django.core.exceptions import ImproperlyConfigured
 
 #***************HOME PAGE***********
-class HomeView(generic.TemplateView):
+class HomeView(TemplateView):
     template_name = 'orthomodoweb/home.html'
     def get_context_data(self, **kwargs):
+       
         context=super(HomeView,self).get_context_data(**kwargs)
         today = datetime.now().date()
         tomorrow = today + timedelta(1)
-        today_start = datetime.combine(today, time())
-        today_end = datetime.combine(tomorrow, time())
+        activity_date_start = datetime.combine(today, time())
+        activity_date_end = datetime.combine(tomorrow, time())
+       
+      
+         
+        activity_date = today
+        print(self.request.GET, file=sys.stderr) 
+        
+        if self.request.GET.get('activity_date'):
+            activity_date_str = self.request.GET.get('activity_date')
+            activity_date = datetime.strptime(activity_date_str, '%Y-%m-%d')
+        if activity_date:
+            activity_date_start = datetime.combine(activity_date, time())
+            activity_date_end = datetime.combine(activity_date+timedelta(1), time())
+        print('activity_date: ', file=sys.stderr)     
+        print(activity_date, file=sys.stderr)     
         #get jobs that have the selected date as the scan date (today)
-        context['selected_day_jobs_scandate'] =  OrthoModoJob.objects.filter(scan_date__lte=today_end, scan_date__gte=today_start) 
-        context['selected_day_jobs_printdate'] =  OrthoModoJob.objects.filter(print_date__lte=today_end, print_date__gte=today_start) 
-        context['selected_day_jobs_plannedcollectiondate'] =  OrthoModoJob.objects.filter(planned_collection_date__lte=today_end, planned_collection_date__gte=today_start) 
-        context['selected_day_jobs_dateupdated'] =  OrthoModoJob.objects.filter(date_updated__lte=today_end, date_updated__gte=today_start) 
+        context['activity_date'] =  activity_date
+        context['selected_day_jobs_scandate'] =  OrthoModoJob.objects.filter(scan_date__lte=activity_date_end, scan_date__gte=activity_date_start) 
+        context['selected_day_jobs_printdate'] =  OrthoModoJob.objects.filter(print_date__lte=activity_date_end, print_date__gte=activity_date_start) 
+        context['selected_day_jobs_plannedcollectiondate'] =  OrthoModoJob.objects.filter(planned_collection_date__lte=activity_date_end, planned_collection_date__gte=activity_date_start) 
+        context['selected_day_jobs_dateupdated'] =  OrthoModoJob.objects.filter(date_updated__lte=activity_date_end, date_updated__gte=activity_date_start) 
         
        
         return context
     
 #**************SIGNUP*****************
+class SignUpForm(UserCreationForm):
+    first_name = forms.CharField(max_length=40, required=True)
+    last_name = forms.CharField(max_length=40, required=True)
+    email = forms.EmailField(max_length=254, help_text='Account info WILL be sent for reference, so use your own (valid) email address!!')
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', )
+        
 def signup(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
+            email = form.cleaned_data.get('email')
             user = authenticate(username=username, password=raw_password)
+            #Try send an email upon registering user
+            emailText = 'Thank you for setting up an account on the OrthoModo System.\n\n Your username is ' + username + '. Your password is ' + raw_password + '. \n\nPlease do not share these details.\n\nDo not reply to or forward this email. For support, use donakello@gmail.com'
+            send_mail('OrthoModo System Account Created', emailText, 'orthomodo@donalkelly.com', [email])
             login(request, user)
             return redirect('orthomodoweb:home')
     else:
-        return redirect('orthomodoweb:home')
+        form = SignUpForm()  
+    return render(request, 'registration/signup.html', {'form': form})
 
         
         
@@ -83,6 +120,10 @@ class OrthoModoJobViewOpen(LoginRequiredMixin,generic.ListView):
     redirect_field_name = 'orthomodoweb:home'
     model = OrthoModoJob
     template_name = 'orthomodoweb/orthomodojob/orthomodojob_open_list.html'
+    
+    
+     
+     
     def get_context_data(self, **kwargs):
         context=super(OrthoModoJobViewOpen,self).get_context_data(**kwargs)
         context['total_open_jobs'] =  OrthoModoJob.objects.filter(Q(flagged=True) | Q(is_collected=False)).count() 
@@ -142,6 +183,7 @@ class OrthoModoJobViewOpen(LoginRequiredMixin,generic.ListView):
             result=result.filter(orthotrac_analysis_done=True)
         if is_printed_filter=="on":
             result=result.filter(is_printed=True)
+        
         return result
         
 class OrthoModoJobViewAll(LoginRequiredMixin,generic.ListView):

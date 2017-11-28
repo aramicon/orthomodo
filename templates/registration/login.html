@@ -1,11 +1,18 @@
-
-{% block title %}Login{% endblock %}
+{% extends 'orthomodoweb/base.html' %}
+{% block title %}OrthoModo Login{% endblock %}
 
 {% block content %}
   <h2>Login</h2>
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Login</button>
+    <button type="submit" class="button">Login</button>
   </form>
+  
+  <p>
+  New user? Sign up <a href="{% url 'orthomodoweb:signup' %}">here</a>
+  </p>
+  <p>
+  If you have forgotten your password, please search for the email sent to you when you set your account up. This will contain necessary account information.
+  </p>
 {% endblock %}

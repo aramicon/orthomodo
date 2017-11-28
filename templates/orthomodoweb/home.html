@@ -6,6 +6,11 @@ $( function() {
 	$( "#tabs" ).tabs();
 	});
 </script>
+<script>
+		$(document).ready(function() {
+			$('#id_activity_date').datepicker({ dateFormat: 'yy-mm-dd' });		
+		});
+	</script>
 
 <div class = "frontpage">
 
@@ -28,7 +33,18 @@ $( function() {
 			<li>View and edit Ortho jobs</li>		
 		</ol>
 	</p>
-	<h3>TODAY</h3>
+	<h2><i class="fa fa-signal" aria-hidden="true"></i> ACTIVITY</h2>
+	
+	<form id="activityform" action="" method="get" accept-charset="utf-8">      
+	{% csrf_token %}	
+		
+	<i class="fa fa-calendar" aria-hidden="true"></i> <label for="id_print_date">ACTIVITY DATE:</label>
+	<input type="text" name="activity_date" id="id_activity_date" maxlength="100" placeholder = "Activity Date" value = '{{ activity_date|date:"Y-m-d" }}'> 
+	
+	<input class="button" type="submit" value=" UPDATE" />
+	
+	</form>
+	
 	<div id="tabs">
 	  <ul>
 		<li><a href="#tabs_scans">SCANS</a></li>
@@ -412,7 +428,7 @@ $( function() {
 	</p>
 	
 {% else %}
-	You are not logged in. You will need to <a href="{% url 'orthomodoweb:login' %}">LOGIN</a> to View Information.
+	You are not logged in. You will need to <a href="{% url 'orthomodoweb:login' %}">LOGIN</a> to View Information. <p>If you are a NEW user you can sign up: <a href="{% url 'orthomodoweb:signup' %}">SIGN UP</a></p>
 {% endif %}
 
 </div>
