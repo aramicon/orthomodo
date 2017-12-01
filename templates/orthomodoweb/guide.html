@@ -1,0 +1,76 @@
+{% extends 'orthomodoweb/base.html' %}
+{% block content %}
+
+
+<div class = "guidepage">
+
+<h2>ORTHOMODO-WEB: Manage your Ortho Model Patients and Jobs.</h2>
+
+<p>
+<h4> <i class="fa fa-exclamation-triangle fa-3x" aria-hidden="true"></i> IMPORTANT NOTES </h4>
+
+<i class="fa fa-calendar fa-3x" aria-hidden="true"></i> The date format used is YY-MM-DD. This means that December 1st, 2017 will show as 17-12-01. This date format is the easiest format for a database and cannot get confused between day and month, e.g. is 12/7 July 12th or December 7th?
+<br /><br />
+<i class="fa fa-floppy-o fa-3x" aria-hidden="true"></i> When you make a change, make sure you SAVE before moving to a different view!
+<br /><br />
+<i class="fa fa-refresh fa-3x" aria-hidden="true"></i> OrthoModo Web is like any website: Use the REFRESH and BACK buttons to make sure your data is correct or you need to move to the previous page.
+
+</p>
+
+<p>
+<h4><i class="fa fa-database fa-3x" aria-hidden="true"></i> What is the Orthomodo Database system for?</h4> 
+Orthomodoweb is a database system for storing basic information to track orthodontic jobs.
+It's aim is to make it easy for many users to access and update information about the following
+<ol>
+<li><i class="fa-li fa fa-square"></i>Patient names, contact details, and Orthotrac system references, which can be easily searched</li>
+<li><i class="fa-li fa fa-square"></i>Patient Scan dates and assigned Clinician</li>
+<li><i class="fa-li fa fa-square"></i>Plaster Model and 3D Printed Model details</li>
+<li><i class="fa-li fa fa-square"></i>Lab Items that are required, such as Retainers and Gumshields</li>
+<li><i class="fa-li fa fa-square"></i>Planned Collection/Delivery type and dates </li>
+</ol>
+
+</p>
+<p>
+<h4><i class="fa fa-eye fa-3x" aria-hidden="true"></i> How do I use the system?</h4> 
+
+The basic process when using the system to add patient/job/lab item details is the following
+<ul>
+<li><i class="fa-li fa fa-square"></i>Check if a patient already exists by searching the patient of jobs list</li>
+<li><i class="fa-li fa fa-square"></i>Create a New patient if he/she is not already on the system. Use the Orthotrac reference number as the patient CODE</li>
+<li><i class="fa-li fa fa-square"></i>Add a New JOB for that patient, or edit one of their existing jobs. A patient may have many separate jobs. A job is based on a printed 3D or plaster MODEL. If you are creating a new model, then create a new JOB</li>
+<li><i class="fa-li fa fa-square"></i>An UNCOLLECTED and UNFLAGGED job is OPEN: it will show up in the OPEN list. This will make it easy to find jobs that are currently in progress</li>
+<li><i class="fa-li fa fa-square"></i>As a JOB progresses, details must be updated, such as when a model was printed/moulded, when it is planned to be collected, etc</li>
+<li><i class="fa-li fa fa-square"></i>Each JOB will have an assigned MODEL USE: this will define what is to be done with a model when created. For example, Lab Items such as a Gumshield may be needed, or the clinician may need to inspect the model, or it may need to be posted directly to a dentist or patient. This should be updated if the use changes.</li>
+<li><i class="fa-li fa fa-square"></i>Lab Items may be added to each JOB. A Lab Item is something that is created using the Model, such as a Retainer or gumshield.</li>
+<li><i class="fa-li fa fa-square"></i>Each Lab Item will have a Type (e.g. Gumshield LOWER) and a Material (e.g. Essix 0.5mm, or Gumshield Blue). The Date Made can be added, and the item can be confirmed as made "Is Made?"</li>
+<li><i class="fa-li fa fa-square"></i>Each Lab Item will have a Type (e.g. Gumshield LOWER) and a Material (e.g. Essix 0.5mm, or Gumshield Blue). The Date Made can be added, and the item can be confirmed as made "Is Made?"</li>
+<li><i class="fa-li fa fa-square"></i>In order to quickly display lab item info, a Lab Item Code will be created. This will look like the following: RU 05 B M 12-01. This code is a shorthand for Retainer Upper, 0.5mm Essix, Is Blocked, Is Made, Made on 2017/12/01</li>
+</ul>
+
+</p>
+
+<p>
+<h4><i class="fa fa-cogs fa-3x" aria-hidden="true"></i> Setting up the System</h4>
+The system will need the following items to be added so that they can be selected for Jobs and Lab Items:
+<ol>
+<li><i class="fa-li fa fa-square"></i>Printers: 3D printers</li>
+<li><i class="fa-li fa fa-square"></i>Clinicians</li>
+<li><i class="fa-li fa fa-square"></i>Lab Item Types: Basic Lab Item type, such as Retainer Upper, Retainer Lower, Gumshield Upper, and Gumshield Lower.</li>
+<li><i class="fa-li fa fa-square"></i>Created Model Uses*: WHat will the model be used for? Further Analysis? To create Lab Items?</li>
+<li><i class="fa-li fa fa-square"></i>Lab Item Materials*: What material will a lab item such as a retainer, be created from?</li>
+<li><i class="fa-li fa fa-square"></i>Model Types*: This is limited to two basic types of model: Plaster and 3D Print</li>
+
+* These are currently only found in the ADMIN section, for which you will need to be an ADMIN user.
+
+</ol>
+</p>
+
+<p><h4><i class="fa fa-file-excel-o fa-3x" aria-hidden="true"></i> CSV Export</h4>
+On the HOME page, you will find an option that lets you download all of the system JOBS as a CSV file. This will include a line for each Lab Item if they exist, and can be opened in Microsoft Excel. You can use this to analyse the data or create a quick backup for reference.
+</p>
+
+
+
+</div>
+
+{% endblock %}

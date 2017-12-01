@@ -1,6 +1,7 @@
 from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.views.generic.base import RedirectView
 
 from . import views
 
@@ -8,8 +9,11 @@ app_name='orthomodoweb'
 
 urlpatterns = [
     #home page
-    url(r'^home/$',views.HomeView.as_view(),name='home'),
+    url(r'^$',views.HomeView.as_view(),name='home'),
     
+    #About/Help page
+    url(r'^guide/$',views.UserGuide.as_view(),name='userguide'),    
+       
     #export
     url(r'^export_as_csv/$',views.export_as_csv,name='export_as_csv'),
     
@@ -56,9 +60,12 @@ urlpatterns = [
     url(r'^collectiontype/add/$', views.CollectionTypeCreate.as_view(), name='collectiontype-add'),
     url(r'^collectiontype/(?P<pk>[0-9]+)/$', views.CollectionTypeUpdate.as_view(), name='collectiontype-update'),
     url(r'^collectiontype/(?P<pk>[0-9]+)/delete$', views.CollectionTypeDelete.as_view(), name='collectiontype-delete'),
-	
-	#labitems
-	 url(r'^(?P<orthomodojob_id>[0-9]+)/labitem/add/$', views.LabItemCreate.as_view(), name='labitem-create'),
-	 url(r'^(?P<orthomodojob_id>[0-9]+)/labitem/(?P<pk>[0-9]+)/$', views.LabItemUpdate.as_view(), name='labitem-update'),
-	 url(r'^orthomodojob/labitem/$', views.LabItemView.as_view(), name='labitem-list'),
+    
+    #labitems
+     url(r'^(?P<orthomodojob_id>[0-9]+)/labitem/add/$', views.LabItemCreate.as_view(), name='labitem-create'),
+     url(r'^(?P<orthomodojob_id>[0-9]+)/labitem/(?P<pk>[0-9]+)/$', views.LabItemUpdate.as_view(), name='labitem-update'),
+     url(r'^orthomodojob/labitem/$', views.LabItemView.as_view(), name='labitem-list'),
+     
+     #redirect everything unknown to the home pahe
+     #url(r'^.*$', RedirectView.as_view(pattern_name='home', permanent=False), name='index')
 ]

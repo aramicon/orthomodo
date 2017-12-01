@@ -4,6 +4,7 @@ li a {
 
 body {
 	color:#33333;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 p{
@@ -448,4 +449,15 @@ input[type=checkbox] {
     padding: 10px;
     margin: 20px 0px 10px 0px;
     width: 50%;
+}
+
+.guidepage{
+	width:80%;
+	padding:20px;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size:1.2em;
+}
+
+li{
+	padding:10px;
 }

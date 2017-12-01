@@ -124,7 +124,7 @@ class OrthoModoJob(models.Model):
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL,blank=True,null=True,related_name="orthomodojob_created_by")
     date_created = models.DateTimeField('Date Created',auto_now_add=True)
     def __str__(self):
-        return self.name
+        return str(self.id)
     def get_absolute_url(self):
        return reverse('orthomodoweb:orthomodojob-update', kwargs={'pk': self.pk})
    
